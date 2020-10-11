@@ -9,18 +9,13 @@ import IndexStoreDB
 import TSCBasic
 
 public struct CommandLineOptions {
-    enum ToolMode: String, Codable {
-      case detect
-      case version
-    }
-
     /// The project path
     public var path: String = ""
 
-    /// The mode in which to run the tool.
+    /// The mode to report
     ///
-    /// If not specified, the tool will be run in format mode.
-    var mode: ToolMode = .detect
+    /// If not specified, default mode is console
+    public var mode: ReporterType = .console
 
     /// The path to the index that should be loaded
     ///
@@ -47,7 +42,7 @@ public func createConfiguration(options: CommandLineOptions) throws -> Configura
         throw PEError.fiendCurrentWorkingDirectoryFailed
     }
     let rootPath = AbsolutePath(options.path, relativeTo: cwd)
-    let configuration = Configuration(projectPath: rootPath, indexStorePath: indexStorePath.asURL.path)
+    let configuration = Configuration(projectPath: rootPath, indexStorePath: indexStorePath.asURL.path, reportType: options.mode)
     
     return configuration
 }

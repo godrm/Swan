@@ -6,10 +6,10 @@ struct CommentRule: SourceCollectRule {
     
     enum Comment {
         /// If comment contains, skip
-        static let signal = "pecker:ignore"
+        static let signal = "swan:ignore"
         
         /// If comment contains, skip all in the scope
-        static let all = "pecker:ignore all"
+        static let all = "swan:ignore all"
     }
     
     func skip(_ node: SyntaxProtocol, location: SourceLocation) -> Bool {

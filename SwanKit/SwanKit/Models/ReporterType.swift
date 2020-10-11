@@ -9,9 +9,9 @@ import Foundation
 ///Detect result output type
 public enum ReporterType: String, Decodable {
     
-    /// Warnings displayed in the IDE
-    case xcode
+    /// Export to console
+    case console
     
-    /// Export json file
-    case json
+    /// Export dot for graphviz
+    case graphviz
 }

@@ -1,7 +1,7 @@
 Swan
 ====
 
-Swan is from **SW**ift static code **AN**anlyzer from xcode derived data.
+Swan is **SW**ift static code **AN**anlyzer from xcode derived data.
 
 ### Goals
 
@@ -11,11 +11,12 @@ Swan is from **SW**ift static code **AN**anlyzer from xcode derived data.
 
 It inspired from [Pecker](https://github.com/woshiccm/Pecker) and [Sitrep](https://github.com/twostraws/Sitrep). 
 
-Swan is built using Apple’s [SwiftSyntax](https://github.com/apple/swift-syntax) and [IndexStoreDB](https://github.com/apple/indexstore-db) for analyzing.
+Swan is built using Apple’s [SwiftSyntax](https://github.com/apple/swift-syntax) and [IndexStoreDB](https://github.com/apple/indexstore-db) for analyzing. 
+
 
 Screenshot
 -------------
-![Swan Window Screenshot](https://raw.github.com/godrm/Swan/master/Screenshots/Swan-Window.png)
+![Swan Window Screenshot](https://github.com/godrm/Swan/blob/main/Screenshots/Swan-Window.png)
 
 
 Features
@@ -24,6 +25,12 @@ Features
 
 Getting Started
 ------------------
+
+
+Contributions
+----------------
+If you are interested in contributing `Swan`, submit ideas or submit Pull Request!
+It's developed fully opened.
 
 
 License

@@ -3,9 +3,7 @@ import TSCBasic
 
 /// Holds the complete set of configured values and defaults.
 public struct Configuration {
-    
-    private static let fileName = ".pecker.yml"
-    
+        
     public let rules: [Rule]
     
     public let reporter: Reporter
@@ -51,21 +49,10 @@ public struct Configuration {
         self.outputFile = outputFile
     }
     
-    public init(projectPath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil) {
-        let fullPath = projectPath.appending(RelativePath(Configuration.fileName)).asURL.path
-//        var yamlConfiguration: YamlConfiguration?
-//        do {
-//            let yamlContents = try String(contentsOfFile: fullPath, encoding: .utf8)
-//            yamlConfiguration = try YamlParser.parse(yamlContents)
-//        } catch YamlParserError.yamlParsing(let message) {
-//            log(message)
-//        } catch {
-//            log(error.localizedDescription)
-//        }
-        
-        let reporter = ReporterFactory.make(nil)
+    public init(projectPath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil, reportType: ReporterType = .console) {
+        let reporter = ReporterFactory.make(reportType)
         let rules = RuleFactory.make()
-        let outputFilePath = AbsolutePath( projectPath.asURL.path).appending(component: "swan.result.json")
+        let outputFilePath = AbsolutePath( projectPath.asURL.path).appending(component: "swan.output.png")
         self.init(projectPath: projectPath,
                   indexStorePath: indexStorePath,
                   indexDatabasePath: indexDatabasePath,
