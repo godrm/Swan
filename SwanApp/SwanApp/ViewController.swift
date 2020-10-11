@@ -44,12 +44,9 @@ class ViewController: NSViewController {
         }
     }
     
-    private func grepBuildDirectory(for project:URL, completeHandler: @escaping (String, String) -> Void ) {
+    private func grepProjectSetting(for url:URL, completeHandler: @escaping (String, String) -> Void ) {
         let aTask = Process()
         aTask.executableURL = URL(string: "file:///usr/bin/xcodebuild")!
-        let isWorkspace = project.lastPathComponent.contains(".xcworkspace")
-        let isProject = project.lastPathComponent.contains(".xcodeproj")
-        guard isWorkspace || isProject else { return }
         let outputPipe = Pipe()
         aTask.standardOutput = outputPipe
         let fileHandle = outputPipe.fileHandleForReading
@@ -78,27 +75,98 @@ class ViewController: NSViewController {
             }
             completeHandler(target_build_dir, project_dir)
         }
+        aTask.arguments = ["-showBuildSettings", "-project", url.path]
+        try? aTask.run()
+    }
+    
+    private func grepWorkspaceScheme(for url:URL, completeHandler: @escaping ([String]) -> Void ) {
+        let aTask = Process()
+        aTask.executableURL = URL(string: "file:///usr/bin/xcodebuild")!
+        let outputPipe = Pipe()
+        aTask.standardOutput = outputPipe
+        let fileHandle = outputPipe.fileHandleForReading
+        fileHandle.waitForDataInBackgroundAndNotify()
+        readData.removeAll()
+        
+        outputObserver = NotificationCenter.default.addObserver(forName: Notification.Name.NSFileHandleDataAvailable, object: fileHandle, queue: nil) { (notification) in
+                let pipeHandle = notification.object as! FileHandle
+                self.readData.append(pipeHandle.availableData)
+                pipeHandle.waitForDataInBackgroundAndNotify()
+        }
+        aTask.terminationHandler = { [weak self] (_) in
+            guard let self = self, let observer = self.outputObserver else { return }
+            NotificationCenter.default.removeObserver(observer)
+            let builds = String.init(data: self.readData, encoding: .utf8)
+            guard let settings = builds?.split(separator: "\n") else { return }
+            var hasSchemes = false
+            var schemes = [String]()
+            for setting in settings {
+                if hasSchemes {
+                    schemes.append(setting.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))
+                    continue
+                }
+                hasSchemes = setting.contains("Schemes:")
+            }
+            completeHandler(schemes)
+        }
+        aTask.arguments = ["-list", "-workspace", url.path]
+        try? aTask.run()
+    }
+    
+    private func grepWorkspaceSchemeSetting(for url:URL, scheme: String, completeHandler: @escaping (String, String) -> Void ) {
+        let aTask = Process()
+        aTask.executableURL = URL(string: "file:///usr/bin/xcodebuild")!
+        let outputPipe = Pipe()
+        aTask.standardOutput = outputPipe
+        let fileHandle = outputPipe.fileHandleForReading
+        fileHandle.waitForDataInBackgroundAndNotify()
+        readData.removeAll()
+        
+        outputObserver = NotificationCenter.default.addObserver(forName: Notification.Name.NSFileHandleDataAvailable, object: fileHandle, queue: nil) { (notification) in
+                let pipeHandle = notification.object as! FileHandle
+                self.readData.append(pipeHandle.availableData)
+                pipeHandle.waitForDataInBackgroundAndNotify()
+        }
+        aTask.terminationHandler = { [weak self] (_) in
+            guard let self = self, let observer = self.outputObserver else { return }
+            NotificationCenter.default.removeObserver(observer)
+            let builds = String.init(data: self.readData, encoding: .utf8)
+            guard let settings = builds?.split(separator: "\n") else { return }
+            var target_build_dir = ""
+            var project_dir = ""
+            for setting in settings {
+                if setting.contains("TARGET_BUILD_DIR"){
+                    target_build_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
+                }
+                else if setting.contains("PROJECT_DIR") {
+                    project_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
+                }
+            }
+            completeHandler(target_build_dir, project_dir)
+        }
+        aTask.arguments = ["-showBuildSettings", "-workspace", url.path, "-scheme", scheme]
+        try? aTask.run()
+    }
+
+    private func grepBuildDirectory(for project:URL, completeHandler: @escaping (String, String) -> Void ) {
+        let isWorkspace = project.lastPathComponent.contains(".xcworkspace")
+        let isProject = project.lastPathComponent.contains(".xcodeproj")
+        guard isWorkspace || isProject else { return }
+
         if isProject {
-            aTask.arguments = ["-showBuildSettings", "-project", project.path]
-            try? aTask.run()
+            grepProjectSetting(for: project) { (target_dir, project_dir) in
+                completeHandler(target_dir, project_dir)
+            }
         }
         else if isWorkspace {
-//            aTask.terminationHandler = { [weak self] (_) in
-//                guard let self = self, let observer = self.outputObserver else { return }
-//                NotificationCenter.default.removeObserver(observer)
-//                let builds = String.init(data: self.readData, encoding: .utf8)
-//                guard let settings = builds?.split(separator: "\n") else { return }
-//                var hasSchemes = false
-//                for setting in settings {
-//                    if hasSchemes {
-//                        print(setting)
-//                        continue
-//                    }
-//                    hasSchemes = setting.contains("Schemes:")
-//                }
-//            }
-            aTask.arguments = ["-showBuildSettings", "-workspace", project.path, "-scheme", "SwanApp"]
-            try? aTask.run()
+            grepWorkspaceScheme(for: project) { (schemes) in
+                //TODO:- Select scheme UI for workspace
+                DispatchQueue.main.async {
+                    self.grepWorkspaceSchemeSetting(for: project, scheme: schemes.first!) { (target_dir, project_dir) in
+                        completeHandler(target_dir, project_dir)
+                    }
+                }
+            }
         }
     }
 }
