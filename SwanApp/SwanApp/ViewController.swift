@@ -8,6 +8,7 @@ import Cocoa
 import SwanKit
 
 class ViewController: NSViewController {
+    static let XCODEBUILD = "file:///usr/bin/xcodebuild"
     private var outputObserver : NSObjectProtocol? = nil
     private var readData = Data()
     
@@ -44,9 +45,9 @@ class ViewController: NSViewController {
         }
     }
     
-    private func grepProjectSetting(for url:URL, completeHandler: @escaping (String, String) -> Void ) {
+    private func runProcess(fileurl: String, arguments:[String], terminationHandler:  @escaping ()->()) {
         let aTask = Process()
-        aTask.executableURL = URL(string: "file:///usr/bin/xcodebuild")!
+        aTask.executableURL = URL(string: fileurl)
         let outputPipe = Pipe()
         aTask.standardOutput = outputPipe
         let fileHandle = outputPipe.fileHandleForReading
@@ -58,8 +59,16 @@ class ViewController: NSViewController {
                 self.readData.append(pipeHandle.availableData)
                 pipeHandle.waitForDataInBackgroundAndNotify()
         }
-        aTask.terminationHandler = { [weak self] (_) in
-            guard let self = self, let observer = self.outputObserver else { return }
+        aTask.terminationHandler = { (_) in
+            terminationHandler()
+        }
+        aTask.arguments = arguments
+        try? aTask.run()
+    }
+    
+    private func grepProjectSetting(for url:URL, completeHandler: @escaping (String, String) -> Void ) {
+        runProcess(fileurl: Self.XCODEBUILD, arguments: ["-showBuildSettings", "-workspace", url.path]) {
+            guard let observer = self.outputObserver else { return }
             NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
             guard let settings = builds?.split(separator: "\n") else { return }
@@ -75,26 +84,11 @@ class ViewController: NSViewController {
             }
             completeHandler(target_build_dir, project_dir)
         }
-        aTask.arguments = ["-showBuildSettings", "-project", url.path]
-        try? aTask.run()
     }
     
     private func grepWorkspaceScheme(for url:URL, completeHandler: @escaping ([String]) -> Void ) {
-        let aTask = Process()
-        aTask.executableURL = URL(string: "file:///usr/bin/xcodebuild")!
-        let outputPipe = Pipe()
-        aTask.standardOutput = outputPipe
-        let fileHandle = outputPipe.fileHandleForReading
-        fileHandle.waitForDataInBackgroundAndNotify()
-        readData.removeAll()
-        
-        outputObserver = NotificationCenter.default.addObserver(forName: Notification.Name.NSFileHandleDataAvailable, object: fileHandle, queue: nil) { (notification) in
-                let pipeHandle = notification.object as! FileHandle
-                self.readData.append(pipeHandle.availableData)
-                pipeHandle.waitForDataInBackgroundAndNotify()
-        }
-        aTask.terminationHandler = { [weak self] (_) in
-            guard let self = self, let observer = self.outputObserver else { return }
+        runProcess(fileurl: Self.XCODEBUILD, arguments: ["-list", "-workspace", url.path]) {
+            guard let observer = self.outputObserver else { return }
             NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
             guard let settings = builds?.split(separator: "\n") else { return }
@@ -109,26 +103,11 @@ class ViewController: NSViewController {
             }
             completeHandler(schemes)
         }
-        aTask.arguments = ["-list", "-workspace", url.path]
-        try? aTask.run()
     }
     
     private func grepWorkspaceSchemeSetting(for url:URL, scheme: String, completeHandler: @escaping (String, String) -> Void ) {
-        let aTask = Process()
-        aTask.executableURL = URL(string: "file:///usr/bin/xcodebuild")!
-        let outputPipe = Pipe()
-        aTask.standardOutput = outputPipe
-        let fileHandle = outputPipe.fileHandleForReading
-        fileHandle.waitForDataInBackgroundAndNotify()
-        readData.removeAll()
-        
-        outputObserver = NotificationCenter.default.addObserver(forName: Notification.Name.NSFileHandleDataAvailable, object: fileHandle, queue: nil) { (notification) in
-                let pipeHandle = notification.object as! FileHandle
-                self.readData.append(pipeHandle.availableData)
-                pipeHandle.waitForDataInBackgroundAndNotify()
-        }
-        aTask.terminationHandler = { [weak self] (_) in
-            guard let self = self, let observer = self.outputObserver else { return }
+        runProcess(fileurl: Self.XCODEBUILD, arguments: ["-showBuildSettings", "-workspace", url.path, "-scheme", scheme]) {
+            guard let observer = self.outputObserver else { return }
             NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
             guard let settings = builds?.split(separator: "\n") else { return }
@@ -144,8 +123,6 @@ class ViewController: NSViewController {
             }
             completeHandler(target_build_dir, project_dir)
         }
-        aTask.arguments = ["-showBuildSettings", "-workspace", url.path, "-scheme", scheme]
-        try? aTask.run()
     }
 
     private func grepBuildDirectory(for project:URL, completeHandler: @escaping (String, String) -> Void ) {

@@ -10,7 +10,6 @@ import GraphViz
 import DOT
 
 public struct GraphReporter: Reporter {
-    
     private func filename(from path:String) -> String {
         let url = URL(fileURLWithPath: path)
         return url.lastPathComponent
@@ -28,14 +27,16 @@ public struct GraphReporter: Reporter {
             if subgraph == nil {
                 subgraph = Subgraph(id: "cluster_\(clusterIndex)", label: name)
                 clusterIndex += 1
-                subgraph?.textColor = Color.named(.black)
+                subgraph?.textColor = Color.named(.blue)
                 subgraph?.borderWidth = 1
-                subgraph?.borderColor = Color.named(.red)
-                subgraph?.backgroundColor = Color.named(.gray)
+                subgraph?.borderColor = Color.named(.blue)
                 fileMap[name] = subgraph
                 graph.append(subgraph!)
             }
-            let node = Node(key.name)
+            let node = Node((key.sourceKind == .protocol) ? "<\(key.name)>": key.name)
+            if key.sourceKind == .class || key.sourceKind == .enum || key.sourceKind == .struct {
+                node.textColor = Color.named(.darkviolet)
+            }
             nodeMap[key.name] = node
             subgraph?.append(node)
         }
@@ -49,10 +50,9 @@ public struct GraphReporter: Reporter {
                 if subgraph == nil {
                     subgraph = Subgraph(id: "cluster_\(clusterIndex)", label: name)
                     clusterIndex += 1
-                    subgraph?.textColor = Color.named(.black)
+                    subgraph?.textColor = Color.named(.blue)
                     subgraph?.borderWidth = 1
-                    subgraph?.borderColor = Color.named(.red)
-                    subgraph?.backgroundColor = Color.named(.gray)
+                    subgraph?.borderColor = Color.named(.blue)
                     fileMap[name] = subgraph
                     graph.append(subgraph!)
                 }
