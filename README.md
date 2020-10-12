@@ -16,15 +16,24 @@ Swan is built using Apple’s [SwiftSyntax](https://github.com/apple/swift-synta
 
 Screenshot
 -------------
+- Window for dragging project
+
 ![Swan Window Screenshot](https://github.com/godrm/Swan/blob/main/Screenshots/Swan-Window.png)
 
+- Result graph of SwanApp Project
+
+![Swan Window Screenshot](https://github.com/godrm/Swan/blob/main/Screenshots/swan-graph-byfile.png)
 
 Features
 ----------
 
+- Drag xcode project from Finder to window
+- Draw Dependency graph of this project
+- Save to image from graph
 
-Getting Started
-------------------
+`Now Workspace supports only first project scheme only`
+
+- Swan use GraphViz to draw graph. It should be installed graphviz in running $PATH.
 
 
 Contributions
