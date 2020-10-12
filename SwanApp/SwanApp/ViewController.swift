@@ -96,6 +96,8 @@ class ViewController: NSViewController {
             var schemes = [String]()
             for setting in settings {
                 if hasSchemes {
+                    let scheme = setting.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                    if scheme == "Pods" || scheme.hasPrefix("Pods-") || scheme == "SwiftLint" { continue }
                     schemes.append(setting.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))
                     continue
                 }
