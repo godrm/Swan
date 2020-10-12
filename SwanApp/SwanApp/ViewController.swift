@@ -67,7 +67,7 @@ class ViewController: NSViewController {
     }
     
     private func grepProjectSetting(for url:URL, completeHandler: @escaping (String, String) -> Void ) {
-        runProcess(fileurl: Self.XCODEBUILD, arguments: ["-showBuildSettings", "-workspace", url.path]) {
+        runProcess(fileurl: Self.XCODEBUILD, arguments: ["-showBuildSettings", "-project", url.path]) {
             guard let observer = self.outputObserver else { return }
             NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
