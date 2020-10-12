@@ -20,12 +20,14 @@ public struct GraphReporter: Reporter {
         var graph = Graph(directed: true)
         var fileMap = Dictionary<String, Subgraph>()
         var nodeMap = Dictionary<String, Node>()
+        var clusterIndex = 1
         
         for key in sources.keys {
             let name = filename(from: key.location.path)
             var subgraph : Subgraph? = fileMap[name]
             if subgraph == nil {
-                subgraph = Subgraph(id: name)
+                subgraph = Subgraph(id: "cluster_\(clusterIndex)", label: name)
+                clusterIndex += 1
                 subgraph?.textColor = Color.named(.black)
                 subgraph?.borderWidth = 1
                 subgraph?.borderColor = Color.named(.red)
@@ -45,7 +47,8 @@ public struct GraphReporter: Reporter {
                 let name = filename(from: reference.location.path)
                 var subgraph : Subgraph? = fileMap[name]
                 if subgraph == nil {
-                    subgraph = Subgraph(id: name)
+                    subgraph = Subgraph(id: "cluster_\(clusterIndex)", label: name)
+                    clusterIndex += 1
                     subgraph?.textColor = Color.named(.black)
                     subgraph?.borderWidth = 1
                     subgraph?.borderColor = Color.named(.red)
@@ -65,7 +68,7 @@ public struct GraphReporter: Reporter {
         }
 
         // Render image using dot layout algorithm
-        let data = try! graph.render(using: .circo, to: .png)
+        let data = try! graph.render(using: .dot, to: .png)
         try? data.write(to: URL(fileURLWithPath: configuration.outputFile.pathString))
     }
 }
