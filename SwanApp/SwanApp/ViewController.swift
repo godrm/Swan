@@ -8,25 +8,33 @@ import Cocoa
 import SwanKit
 
 class ViewController: NSViewController {
-    static let XCODEBUILD = "file:///usr/bin/xcodebuild"
-    private var outputObserver : NSObjectProtocol? = nil
-    private var readData = Data()
-    
-    fileprivate func analyze(with options : CommandLineOptions) {
-        do {
-            let configuration = try createConfiguration(options: options)
-            let analyzer = try Analyzer(configuration: configuration)
-            let sources = try analyzer.analyze()
-            configuration.reporter.report(configuration, sources: sources)
-        } catch {
-            log(error.localizedDescription, level: .error)
-        }
+    enum Constant {
+        static let XCODEBUILD = "file:///usr/bin/xcodebuild"
+        static let OPEN = "file:///usr/bin/open"
+        static let INDEX = "Index"
+        static let DATASTORE = "DataStore"
+        static let TARGET_DIR = "TARGET_BUILD_DIR"
+        static let PROJECT_DIR = "PROJECT_DIR"
+        static let XC_PROJECT = ".xcodeproj"
+        static let XC_WORKSPACE = ".xcworkspace"
+    }
+    enum Argument {
+        static let SHOW_SETTING = "-showBuildSettings"
+        static let PROJECT = "-project"
+        static let LIST = "-list"
+        static let WORKSPACE = "-workspace"
+        static let SCHEME = "-scheme"
+        static let PREVIEW = "Preview.app"
     }
     
+    
+    private var outputObserver : NSObjectProtocol? = nil
+    private var readData = Data()
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(forName: NSNotification.Name.init("DroppedURL"), object: nil, queue: nil) { (notification) in
+        NotificationCenter.default.addObserver(forName: ProjectDragView.NotificationName.didDropURL, object: nil, queue: nil) { (notification) in
             guard let url = notification.userInfo?["url"] as? URL else { return }
             self.grepBuildDirectory(for: url) { (target, project) in
                 guard target.count > 0, project.count > 0 else { return }
@@ -35,14 +43,37 @@ class ViewController: NSViewController {
                 targetURL.deleteLastPathComponent()
                 targetURL.deleteLastPathComponent()
                 targetURL.deleteLastPathComponent()
-                targetURL.appendPathComponent("Index")
-                targetURL.appendPathComponent("DataStore")
+                targetURL.appendPathComponent(Self.Constant.INDEX)
+                targetURL.appendPathComponent(Self.Constant.DATASTORE)
                 options.indexStorePath = targetURL.path
                 options.path = project
                 options.mode = .graphviz
                 self.analyze(with: options)
             }
         }
+    }
+    
+    fileprivate func analyze(with options : CommandLineOptions) {
+        do {
+            let configuration = try createConfiguration(options: options)
+            let analyzer = try Analyzer(configuration: configuration)
+            let sources = try analyzer.analyze()
+            let outputs = configuration.reporter.report(configuration, sources: sources)
+            if options.mode == .graphviz {
+                preview(outputs)
+            }
+        } catch {
+            log(error.localizedDescription, level: .error)
+        }
+    }
+
+    private func preview(_ outputs: [String]) {
+        guard outputs.count > 0,
+              let output = outputs.first else { return }
+        let aTask = Process()
+        aTask.executableURL = URL(string: Self.Constant.OPEN)
+        aTask.arguments = ["-a", Self.Argument.PREVIEW, output]
+        aTask.launch()
     }
     
     private func runProcess(fileurl: String, arguments:[String], terminationHandler:  @escaping ()->()) {
@@ -67,7 +98,7 @@ class ViewController: NSViewController {
     }
     
     private func grepProjectSetting(for url:URL, completeHandler: @escaping (String, String) -> Void ) {
-        runProcess(fileurl: Self.XCODEBUILD, arguments: ["-showBuildSettings", "-project", url.path]) {
+        runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.SHOW_SETTING, Self.Argument.PROJECT, url.path]) {
             guard let observer = self.outputObserver else { return }
             NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
@@ -75,10 +106,10 @@ class ViewController: NSViewController {
             var target_build_dir = ""
             var project_dir = ""
             for setting in settings {
-                if setting.contains("TARGET_BUILD_DIR"){
+                if setting.contains(Self.Constant.TARGET_DIR){
                     target_build_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
                 }
-                else if setting.contains("PROJECT_DIR") {
+                else if setting.contains(Self.Constant.PROJECT_DIR) {
                     project_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
                 }
             }
@@ -87,7 +118,7 @@ class ViewController: NSViewController {
     }
     
     private func grepWorkspaceScheme(for url:URL, completeHandler: @escaping ([String]) -> Void ) {
-        runProcess(fileurl: Self.XCODEBUILD, arguments: ["-list", "-workspace", url.path]) {
+        runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.LIST, Self.Argument.WORKSPACE, url.path]) {
             guard let observer = self.outputObserver else { return }
             NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
@@ -108,7 +139,7 @@ class ViewController: NSViewController {
     }
     
     private func grepWorkspaceSchemeSetting(for url:URL, scheme: String, completeHandler: @escaping (String, String) -> Void ) {
-        runProcess(fileurl: Self.XCODEBUILD, arguments: ["-showBuildSettings", "-workspace", url.path, "-scheme", scheme]) {
+        runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.SHOW_SETTING, Self.Argument.WORKSPACE, url.path, Self.Argument.SCHEME, scheme]) {
             guard let observer = self.outputObserver else { return }
             NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
@@ -116,10 +147,10 @@ class ViewController: NSViewController {
             var target_build_dir = ""
             var project_dir = ""
             for setting in settings {
-                if setting.contains("TARGET_BUILD_DIR"){
+                if setting.contains(Self.Constant.TARGET_DIR){
                     target_build_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
                 }
-                else if setting.contains("PROJECT_DIR") {
+                else if setting.contains(Self.Constant.PROJECT_DIR) {
                     project_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
                 }
             }
@@ -128,8 +159,8 @@ class ViewController: NSViewController {
     }
 
     private func grepBuildDirectory(for project:URL, completeHandler: @escaping (String, String) -> Void ) {
-        let isWorkspace = project.lastPathComponent.contains(".xcworkspace")
-        let isProject = project.lastPathComponent.contains(".xcodeproj")
+        let isWorkspace = project.lastPathComponent.contains(Self.Constant.XC_WORKSPACE)
+        let isProject = project.lastPathComponent.contains(Self.Constant.XC_PROJECT)
         guard isWorkspace || isProject else { return }
 
         if isProject {
@@ -141,12 +172,30 @@ class ViewController: NSViewController {
             grepWorkspaceScheme(for: project) { (schemes) in
                 //TODO:- Select scheme UI for workspace
                 DispatchQueue.main.async {
-                    self.grepWorkspaceSchemeSetting(for: project, scheme: schemes.first!) { (target_dir, project_dir) in
+                    let selectButton = NSPopUpButton(title: "shemes", target: self, action: #selector(ViewController.selectScheme))
+                    selectButton.title = schemes.first!
+                    selectButton.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
+                    selectButton.addItems(withTitles: schemes)
+                    
+                    let alert = NSAlert()
+                    alert.accessoryView = selectButton
+                    alert.messageText = "Select scheme to analyze"
+                    alert.addButton(withTitle: "Analyze")
+                    alert.addButton(withTitle: "Cancel")
+                    let selected = alert.runModal()
+                    
+                    guard selected == .alertFirstButtonReturn,
+                          let scheme = selectButton.selectedItem?.title else { return }
+                    self.grepWorkspaceSchemeSetting(for: project, scheme: scheme) { (target_dir, project_dir) in
                         completeHandler(target_dir, project_dir)
                     }
                 }
             }
         }
+    }
+    
+    @objc private func selectScheme(_ sender: NSPopUpButton) {
+        sender.title = sender.selectedItem?.title ?? ""
     }
 }
 

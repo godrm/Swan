@@ -8,6 +8,10 @@
 import AppKit
 
 class ProjectDragView: NSImageView {
+    enum NotificationName {
+       static let didDropURL = Notification.Name.init(rawValue: "DroppedURL")
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         self.registerForDraggedTypes([.fileURL])
@@ -49,7 +53,7 @@ class ProjectDragView: NSImageView {
     }
     
     func handleFileURLObject(_ url: URL) {
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: "DroppedURL"), object: self, userInfo: ["url":url])
+        NotificationCenter.default.post(name: Self.NotificationName.didDropURL, object: self, userInfo: ["url":url])
     }
     
     func highlight() {

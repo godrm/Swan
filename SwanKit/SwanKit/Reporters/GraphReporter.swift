@@ -15,7 +15,7 @@ public struct GraphReporter: Reporter {
         return url.lastPathComponent
     }
     
-    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) {
+    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) -> [String]{
         var graph = Graph(directed: true)
         var fileMap = Dictionary<String, Subgraph>()
         var nodeMap = Dictionary<String, Node>()
@@ -70,5 +70,6 @@ public struct GraphReporter: Reporter {
         // Render image using dot layout algorithm
         let data = try! graph.render(using: .dot, to: .png)
         try? data.write(to: URL(fileURLWithPath: configuration.outputFile.pathString))
+        return [configuration.outputFile.pathString]
     }
 }

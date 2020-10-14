@@ -9,8 +9,9 @@ import IndexStoreDB
 
 public struct ConsoleReporter: Reporter {
     
-    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) {
+    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) -> [String] {
         var entries = sources.map { "key: \($0.key), values: \($0.value)" }
-                print(entries)
+        print(entries)
+        return entries
     }
 }
