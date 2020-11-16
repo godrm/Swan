@@ -52,7 +52,7 @@ public struct Configuration {
     public init(projectPath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil, reportType: ReporterType = .console) {
         let reporter = ReporterFactory.make(reportType)
         let rules = RuleFactory.make()
-        let outputFilePath = AbsolutePath( projectPath.asURL.path).appending(component: "swan.output.png")
+        let outputFilePath = AbsolutePath(projectPath.asURL.path).appending(component: "swan.output.pdf")
         self.init(projectPath: projectPath,
                   indexStorePath: indexStorePath,
                   indexDatabasePath: indexDatabasePath,
@@ -60,12 +60,8 @@ public struct Configuration {
                   reporter: reporter,
                   included: ([""]).map{ projectPath.appending(component: $0)},
                   excluded: ([]).map{ projectPath.appending(component: $0)} ,
-                  blacklistFiles:
-//                    yamlConfiguration?.blacklistFiles ??
-                    [],
-                  blacklistSymbols:
-//                    yamlConfiguration?.blacklistSymbols ??
-                    [],
+                  blacklistFiles: [],
+                  blacklistSymbols: [],
                   outputFile: outputFilePath)
     }
 }

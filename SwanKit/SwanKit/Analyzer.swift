@@ -39,10 +39,6 @@ public final class Analyzer {
 
         return deadSources.value
     }
-    
-    public func hello() -> String {
-        return "hello"
-    }
 }
 
 extension Analyzer {

@@ -15,7 +15,7 @@ public struct GraphReporter: Reporter {
         return url.lastPathComponent
     }
     
-    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) -> [String]{
+    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) -> [String] {
         var graph = Graph(directed: true)
         var fileMap = Dictionary<String, Subgraph>()
         var nodeMap = Dictionary<String, Node>()
@@ -33,10 +33,11 @@ public struct GraphReporter: Reporter {
                 fileMap[name] = subgraph
                 graph.append(subgraph!)
             }
-            let node = Node((key.sourceKind == .protocol) ? "<\(key.name)>": key.name)
-            if key.sourceKind == .class || key.sourceKind == .enum || key.sourceKind == .struct {
+            let node = Node((key.sourceKind == .protocol) ? "<<\(key.name)>>": key.name)
+            if key.sourceKind == .class || key.sourceKind == .enum || key.sourceKind == .struct || key.sourceKind == .protocol {
+                node.shape = .box
                 node.textColor = Color.named(.darkviolet)
-            }
+            }            
             nodeMap[key.name] = node
             subgraph?.append(node)
         }
@@ -68,7 +69,7 @@ public struct GraphReporter: Reporter {
         }
 
         // Render image using dot layout algorithm
-        let data = try! graph.render(using: .dot, to: .png)
+        let data = try! graph.render(using: .dot, to: .pdf)
         try? data.write(to: URL(fileURLWithPath: configuration.outputFile.pathString))
         return [configuration.outputFile.pathString]
     }

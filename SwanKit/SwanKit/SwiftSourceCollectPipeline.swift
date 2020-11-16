@@ -102,13 +102,9 @@ extension SwiftSourceCollectPipeline {
     
     func skip(syntax: IdentifierSyntax, location: SourceLocation) -> Bool {
         // Skip the symbol in blacklist
-//        if context.configuration.blacklistSymbols.contains(syntax.identifier.text) {
-//            return true
-//        }
-//        // Rules check
-//        if rules.contains(where: { $0.skip(syntax, location: location) }) {
-//            return true
-//        }
+        if context.configuration.blacklistSymbols.contains(syntax.identifier.text) {
+            return true
+        }
         return false
     }
     
