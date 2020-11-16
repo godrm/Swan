@@ -5,9 +5,9 @@ Swan is **SW**ift static code **AN**anlyzer from xcode derived data.
 
 ### Goals
 
-- A count of Class, Function, Protocol references
+- Summary of Class, Function, Protocol references
 - Visualization for dependencies of references
-- Provides architecture's view of modules, files, functions.
+- Provides architecture's view of modules, files, functions
 
 It inspired from [Pecker](https://github.com/woshiccm/Pecker) and [Sitrep](https://github.com/twostraws/Sitrep). 
 
@@ -27,11 +27,9 @@ Screenshot
 Features
 ----------
 
-- Drag xcode project from Finder to window
-- Draw Dependency graph of this project
+- Drag Xcode project from Finder to Swan window
+- Draw Dependency graph of selected project or workspace
 - Save to image from graph
-
-`Now Workspace supports only first project scheme only`
 
 - Swan use GraphViz to draw graph. It should be installed graphviz in running $PATH.
 
