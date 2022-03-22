@@ -47,7 +47,7 @@ class ViewController: NSViewController {
                 targetURL.appendPathComponent(Self.Constant.DATASTORE)
                 options.indexStorePath = targetURL.path
                 options.path = project
-                options.mode = .graphviz
+                options.mode = .graphvizBinary
                 self.analyze(with: options)
             }
         }

@@ -59,7 +59,7 @@ public struct Configuration {
                   rules: rules,
                   reporter: reporter,
                   included: ([""]).map{ projectPath.appending(component: $0)},
-                  excluded: ([]).map{ projectPath.appending(component: $0)} ,
+                  excluded: (["Pods"]).map{ projectPath.appending(component: $0)} ,
                   blacklistFiles: [],
                   blacklistSymbols: [],
                   outputFile: outputFilePath)
