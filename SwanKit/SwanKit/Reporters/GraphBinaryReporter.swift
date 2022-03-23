@@ -17,6 +17,7 @@ public struct GraphBinaryReporter: Reporter {
     public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) -> [String] {
         var graph = Graph(directed: true)
         var fileMap = Dictionary<String, Subgraph>()
+        var typeMap = Dictionary<String, Subgraph>()
         var nodeMap = Dictionary<String, Node>()
         var clusterIndex = 1
         
@@ -48,11 +49,12 @@ public struct GraphBinaryReporter: Reporter {
                 node.shape = .box
                 node.textColor = Color.named(.darkseagreen4)
             }
+            
             nodeMap[key.name] = node
             subgraph?.append(node)
         }
         
-        let edges = Set<Edge>()
+        var edges = Set<Edge>()
         for key in sources.keys {
             guard let node = nodeMap[key.name] else { continue }
             for reference in sources[key]! {
@@ -92,6 +94,7 @@ public struct GraphBinaryReporter: Reporter {
                 }
                 var edge = Edge(from: other!, to: node)
                 guard !edges.contains(edge) else { continue }
+                edges.insert(edge)
                 if key.sourceKind == .protocol {
                     edge.style = .dashed
                 }

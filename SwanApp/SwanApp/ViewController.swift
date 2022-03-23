@@ -55,12 +55,19 @@ class ViewController: NSViewController {
     
     fileprivate func analyze(with options : CommandLineOptions) {
         do {
-            let configuration = try createConfiguration(options: options)
+            let configuration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
             let analyzer = try Analyzer(configuration: configuration)
             let sources = try analyzer.analyze()
             let outputs = configuration.reporter.report(configuration, sources: sources)
-            if options.mode == .graphviz {
+            if options.mode == .graphvizBinary {
                 preview(outputs)
+            }
+            var fileOptions : CommandLineOptions = options
+            fileOptions.mode = .graphvizFile
+            let fileConfiguration = try createConfiguration(options: fileOptions, outputFile: "swan.file.pdf")
+            let fileOutputs = fileConfiguration.reporter.report(fileConfiguration, sources: sources)
+            if fileOptions.mode == .graphvizFile {
+                preview(fileOutputs)
             }
         } catch {
             log(error.localizedDescription, level: .error)

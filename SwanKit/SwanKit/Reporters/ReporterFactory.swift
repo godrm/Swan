@@ -10,6 +10,8 @@ struct ReporterFactory {
             return GraphReporter()
         case .graphvizBinary:
             return GraphBinaryReporter()
+        case .graphvizFile:
+            return GraphFileReporter()
         default:
             return ConsoleReporter()
         }

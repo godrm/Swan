@@ -26,7 +26,7 @@ public struct CommandLineOptions {
     }
 }
 
-public func createConfiguration(options: CommandLineOptions) throws -> Configuration {
+public func createConfiguration(options: CommandLineOptions, outputFile: String = "swan.output.pdf") throws -> Configuration {
     let indexStorePath: AbsolutePath
     if let indexStorePathString = options.indexStorePath {
         indexStorePath = AbsolutePath(indexStorePathString)
@@ -42,7 +42,7 @@ public func createConfiguration(options: CommandLineOptions) throws -> Configura
         throw PEError.fiendCurrentWorkingDirectoryFailed
     }
     let rootPath = AbsolutePath(options.path, relativeTo: cwd)
-    let configuration = Configuration(projectPath: rootPath, indexStorePath: indexStorePath.asURL.path, reportType: options.mode)
+    let configuration = Configuration(projectPath: rootPath, indexStorePath: indexStorePath.asURL.path, reportType: options.mode, outputFile: outputFile)
     
     return configuration
 }

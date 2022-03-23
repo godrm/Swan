@@ -49,10 +49,10 @@ public struct Configuration {
         self.outputFile = outputFile
     }
     
-    public init(projectPath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil, reportType: ReporterType = .console) {
+    public init(projectPath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil, reportType: ReporterType = .console, outputFile: String = "swan.output.pdf") {
         let reporter = ReporterFactory.make(reportType)
         let rules = RuleFactory.make()
-        let outputFilePath = AbsolutePath(projectPath.asURL.path).appending(component: "swan.output.pdf")
+        let outputFilePath = AbsolutePath(projectPath.asURL.path).appending(component: outputFile)
         self.init(projectPath: projectPath,
                   indexStorePath: indexStorePath,
                   indexDatabasePath: indexDatabasePath,
