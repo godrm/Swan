@@ -23,24 +23,31 @@ public struct GraphBinaryReporter: Reporter {
         
         for key in sources.keys {
             let name = filename(from: key.location.path)
-            var subgraph : Subgraph? = fileMap[name]
+            var subgraph : Subgraph? = fileMap[key.location.path]
             if subgraph == nil {
                 subgraph = Subgraph(id: "cluster_\(clusterIndex)", label: name)
                 clusterIndex += 1
                 subgraph?.textColor = Color.named(.blue)
                 subgraph?.borderWidth = 1
                 subgraph?.borderColor = Color.named(.blue)
-                fileMap[name] = subgraph
+                fileMap[key.location.path] = subgraph
                 graph.append(subgraph!)
             }
             var keyName = "\(key.name)"
             if (key.sourceKind == .protocol) {
                 keyName = "<<\(key.name)>>"
             }
-            else if (key.sourceKind == .function) {
-                continue
+
+            guard let reference = sources[key]?.first else { continue }
+            if (reference.symbol.kind == .staticMethod || reference.symbol.kind == .classMethod) {
+                keyName = "+\(reference.symbol.name)"
             }
-            let node = Node(keyName)
+            else if (reference.symbol.kind == .instanceMethod) {
+                keyName = "-\(reference.symbol.name)"
+            }
+
+            let node = Node(reference.symbol.usr)
+            node.label = keyName
             if key.sourceKind == .class || key.sourceKind == .enum || key.sourceKind == .struct || key.sourceKind == .typealias {
                 node.shape = .box
                 node.textColor = Color.named(.darkviolet)
@@ -49,33 +56,45 @@ public struct GraphBinaryReporter: Reporter {
                 node.shape = .box
                 node.textColor = Color.named(.darkseagreen4)
             }
-            
-            nodeMap[key.name] = node
+            nodeMap[reference.symbol.usr] = node
             subgraph?.append(node)
         }
         
-        var edges = Set<Edge>()
+        let edges = Set<Edge>()
         for key in sources.keys {
-            guard let node = nodeMap[key.name] else { continue }
             for reference in sources[key]! {
+                guard let node = nodeMap[reference.symbol.usr] else { continue }
                 guard let relation = reference.relations.first else { continue }
                 let name = filename(from: reference.location.path)
-                var subgraph : Subgraph? = fileMap[name]
-                if subgraph == nil {
-                    subgraph = Subgraph(id: "cluster_\(clusterIndex)", label: name)
+                let keyFilename = filename(from: key.location.path)
+                
+                var subgraphTo : Subgraph? = fileMap[key.location.path]
+                if subgraphTo == nil {
+                    subgraphTo = Subgraph(id: "cluster_\(clusterIndex)", label: keyFilename)
                     clusterIndex += 1
-                    subgraph?.textColor = Color.named(.blue)
-                    subgraph?.borderWidth = 1
-                    subgraph?.borderColor = Color.named(.blue)
-                    fileMap[name] = subgraph
-                    graph.append(subgraph!)
+                    subgraphTo?.textColor = Color.named(.blue)
+                    subgraphTo?.borderWidth = 1
+                    subgraphTo?.borderColor = Color.named(.blue)
+                    fileMap[key.location.path] = subgraphTo
+                    graph.append(subgraphTo!)
                 }
+                
+                var subgraphFrom : Subgraph? = fileMap[reference.location.path]
+                if subgraphFrom == nil {
+                    subgraphFrom = Subgraph(id: "cluster_\(clusterIndex)", label: name)
+                    clusterIndex += 1
+                    subgraphFrom?.textColor = Color.named(.blue)
+                    subgraphFrom?.borderWidth = 1
+                    subgraphFrom?.borderColor = Color.named(.blue)
+                    fileMap[reference.location.path] = subgraphFrom
+                    graph.append(subgraphFrom!)
+                }
+
                 var symbolName = "\(relation.symbol.name)"
                 if (relation.symbol.kind == .protocol) {
                     symbolName = "<<\(relation.symbol.name)>>"
                 }
-                guard key.name != symbolName else { continue }
-                var other = nodeMap[symbolName]
+                var other = nodeMap[relation.symbol.usr]
                 if other == nil {
                     if relation.symbol.kind == .instanceProperty ||
                         relation.symbol.kind == .classProperty ||
@@ -87,18 +106,17 @@ public struct GraphBinaryReporter: Reporter {
                     else if (relation.symbol.kind == .instanceMethod) {
                         symbolName = "-\(relation.symbol.name)"
                     }
-
-                    other = Node(symbolName)
-                    nodeMap[symbolName] = other
-                    subgraph?.append(other!)
+                    other = Node(relation.symbol.usr)
+                    other?.label = symbolName
+                    nodeMap[relation.symbol.usr] = other
+                    subgraphFrom?.append(other!)
                 }
                 var edge = Edge(from: other!, to: node)
                 guard !edges.contains(edge) else { continue }
-                edges.insert(edge)
                 if key.sourceKind == .protocol {
                     edge.style = .dashed
                 }
-                subgraph?.append(edge)
+                graph.append(edge)
             }
         }
 

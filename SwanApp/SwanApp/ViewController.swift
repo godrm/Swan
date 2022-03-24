@@ -6,6 +6,7 @@
 //
 import Cocoa
 import SwanKit
+import IndexStoreDB
 
 class ViewController: NSViewController {
     enum Constant {
@@ -48,25 +49,36 @@ class ViewController: NSViewController {
                 options.indexStorePath = targetURL.path
                 options.path = project
                 options.mode = .graphvizBinary
-                self.analyze(with: options)
+                let sources = self.analyze(with: options)
+                self.report(for: sources, with: options)
             }
         }
     }
     
-    fileprivate func analyze(with options : CommandLineOptions) {
+    fileprivate func analyze(with options : CommandLineOptions) -> [SourceDetail:[SymbolOccurrence]] {
         do {
             let configuration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
             let analyzer = try Analyzer(configuration: configuration)
-            let sources = try analyzer.analyze()
+            return try analyzer.analyze()
+        } catch {
+            log(error.localizedDescription, level: .error)
+        }
+        return [:]
+    }
+    
+    private func report(for sources: [SourceDetail:[SymbolOccurrence]], with options: CommandLineOptions) {
+        do {
+            let configuration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
             let outputs = configuration.reporter.report(configuration, sources: sources)
-            if options.mode == .graphvizBinary {
+            if options.mode != .console {
                 preview(outputs)
             }
-            var fileOptions : CommandLineOptions = options
-            fileOptions.mode = .graphvizFile
-            let fileConfiguration = try createConfiguration(options: fileOptions, outputFile: "swan.file.pdf")
+            
+            var options = options
+            options.mode = .graphvizFile
+            let fileConfiguration = try createConfiguration(options: options, outputFile: "swan.file.pdf")
             let fileOutputs = fileConfiguration.reporter.report(fileConfiguration, sources: sources)
-            if fileOptions.mode == .graphvizFile {
+            if options.mode != .console {
                 preview(fileOutputs)
             }
         } catch {

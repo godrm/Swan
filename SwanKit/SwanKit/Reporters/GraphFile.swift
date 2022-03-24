@@ -22,7 +22,7 @@ public struct GraphFileReporter: Reporter {
             let name = filename(from: key.location.path)
             var node = nodeMap[name]
             if node == nil {
-                node = Node(name)
+                node = Node(name, path:key.location.path)
                 node?.shape = .box
                 node?.textColor = Color.named(.darkviolet)
                 nodeMap[name] = node
@@ -40,7 +40,9 @@ public struct GraphFileReporter: Reporter {
                 guard keyFilename != name else { continue }
                 var other = nodeMap[name]
                 if other == nil {
-                    other = Node(name)
+                    other = Node(name, path: reference.location.path)
+                    other?.shape = .box
+                    other?.textColor = Color.named(.darkviolet)
                     nodeMap[name] = other
                     graph.append(other!)
                 }
