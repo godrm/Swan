@@ -27,18 +27,33 @@ public final class Analyzer {
     }
     
     public func analyze() throws -> [SourceDetail: [SymbolOccurrence]] {
-        let deadSources = ThreadSafe<[SourceDetail: [SymbolOccurrence]]>([:])
+        let foundSource = ThreadSafe<[SourceDetail: [SymbolOccurrence]]>([:])
         sourceCodeCollector.collect()
 
         DispatchQueue.concurrentPerform(iterations: sourceCodeCollector.sources.count) { (index) in
-                let occurs = analyze(source: sourceCodeCollector.sources[index])
-                deadSources.atomically {
+                let symbol = sourceCodeCollector.sources[index]
+                let occurs = analyze(source: symbol)
+                foundSource.atomically {
                     $0[sourceCodeCollector.sources[index]] = occurs
                 }
         }
-
-        return deadSources.value
+        return foundSource.value
     }
+    
+    public func analyzeSymbols() throws -> [SymbolOccurrence] {
+        let foundSource = ThreadSafe<[SymbolOccurrence]>([])
+        sourceCodeCollector.collectSymbols(with: workSpace.index!)
+
+        DispatchQueue.concurrentPerform(iterations: sourceCodeCollector.symbols.count) { (index) in
+                let symbol = sourceCodeCollector.symbols[index]
+                let occurs = analyze(symbol: symbol)
+                foundSource.atomically {
+                    $0.append(contentsOf: occurs)
+                }
+        }
+        return foundSource.value
+    }
+
 }
 
 extension Analyzer {
@@ -71,6 +86,17 @@ extension Analyzer {
                    
         return symbolOccurrenceResults
     }
+    
+    private func analyze(symbol: Symbol) -> [SymbolOccurrence] {
+
+        let symbolOccurrenceResults = sourceKitserver.occurrences(
+            ofUSR: symbol.usr,
+            roles: [.reference],
+            workspace: workSpace)
+                   
+        return symbolOccurrenceResults
+    }
+
     
     /// In the rule class, struct, enum and protocol extensions  are not mean  used,
     /// But in symbol their extensions are defined as referred,

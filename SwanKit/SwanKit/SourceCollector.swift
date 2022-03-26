@@ -9,6 +9,7 @@ import Foundation
 import SwiftSyntax
 import SwiftSyntaxParser
 import TSCBasic
+import IndexStoreDB
 
 public typealias FileSystem = TSCBasic.FileSystem
 typealias SafeSourceExtensions = ThreadSafe<[String: SourceDetail]>
@@ -18,6 +19,8 @@ class SourceCollector {
 
     let sourceExtensions = SafeSourceExtensions([:])
     private(set) var sources: [SourceDetail] = []
+    private(set) var sourceSet: Set<SourceDetail> = []
+    private(set) var symbols: [Symbol] = []
     private let configuration: Configuration
     private let targetPath: AbsolutePath
     private let excluded: Set<AbsolutePath>
@@ -53,7 +56,23 @@ class SourceCollector {
             sourceExtensions.atomically { $0 += pipeline.sourceExtensions }
         }
         sources = safeSources.value
+        sourceSet = Set<SourceDetail>(sources)
     }
+    
+    func collectSymbols(with indexDB: IndexStoreDB) {
+        let files = computeContents()
+        let safeSources = ThreadSafe<[Symbol]>([])
+        DispatchQueue.concurrentPerform(iterations: files.count) { index in
+            let symbols = indexDB.symbols(inFilePath: files[index].pathString)
+//            guard let syntax = try? SyntaxParser.parse(files[index].asURL) else {
+//                return
+//            }
+//
+            safeSources.atomically { $0.append(contentsOf: symbols) }
+        }
+        symbols = safeSources.value
+    }
+
 
     /// Compute the contents of the files in a target.
     ///

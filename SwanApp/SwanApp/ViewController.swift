@@ -48,7 +48,7 @@ class ViewController: NSViewController {
                 targetURL.appendPathComponent(Self.Constant.DATASTORE)
                 options.indexStorePath = targetURL.path
                 options.path = project
-                options.mode = .graphvizBinary
+                options.mode = .graphvizSymbol
                 let sources = self.analyze(with: options)
                 self.report(for: sources, with: options)
             }
@@ -59,7 +59,8 @@ class ViewController: NSViewController {
         do {
             let configuration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
             let analyzer = try Analyzer(configuration: configuration)
-            return try analyzer.analyze()
+            let symbols = try analyzer.analyzeSymbols()
+            return [SourceDetail.init(): symbols]
         } catch {
             log(error.localizedDescription, level: .error)
         }

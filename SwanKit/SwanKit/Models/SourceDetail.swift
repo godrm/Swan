@@ -30,6 +30,16 @@ public struct SourceDetail {
     
     /// The location of the source
     public var location: SourceLocation
+    
+    public init(name: String, sourceKind: SourceKind, location: SourceLocation) {
+        self.name = name
+        self.sourceKind = sourceKind
+        self.location = location
+    }
+    
+    public init() {
+        self.init(name: "", sourceKind: .function, location: SourceLocation.init(path: "", line: 0, column: 0, offset: 0))
+    }
 }
 
 extension SourceDetail: CustomStringConvertible {

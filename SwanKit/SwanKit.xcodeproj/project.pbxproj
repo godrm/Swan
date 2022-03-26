@@ -11,7 +11,7 @@
 		8301E9C12533171C00DFAABE /* GraphViz in Frameworks */ = {isa = PBXBuildFile; productRef = 8301E9C02533171C00DFAABE /* GraphViz */; };
 		832E9DF827EA220A00EB6CC7 /* GraphFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832E9DF727EA220A00EB6CC7 /* GraphFile.swift */; };
 		83607CB827E822A90009532A /* SwiftSyntaxParser in Frameworks */ = {isa = PBXBuildFile; productRef = 83607CB727E822A90009532A /* SwiftSyntaxParser */; };
-		83607CBA27E9D1B60009532A /* GraphBinaryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83607CB927E9D1B60009532A /* GraphBinaryReporter.swift */; };
+		83607CBA27E9D1B60009532A /* GraphSymbolReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83607CB927E9D1B60009532A /* GraphSymbolReporter.swift */; };
 		83B78C392530832F00D339A7 /* SwanKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83B78C2F2530832F00D339A7 /* SwanKit.framework */; };
 		83B78C3E2530832F00D339A7 /* SwanKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C3D2530832F00D339A7 /* SwanKitTests.swift */; };
 		83B78C402530832F00D339A7 /* SwanKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 83B78C322530832F00D339A7 /* SwanKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -84,7 +84,7 @@
 
 /* Begin PBXFileReference section */
 		832E9DF727EA220A00EB6CC7 /* GraphFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphFile.swift; sourceTree = "<group>"; };
-		83607CB927E9D1B60009532A /* GraphBinaryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphBinaryReporter.swift; sourceTree = "<group>"; };
+		83607CB927E9D1B60009532A /* GraphSymbolReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphSymbolReporter.swift; sourceTree = "<group>"; };
 		83B78C2F2530832F00D339A7 /* SwanKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwanKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		83B78C322530832F00D339A7 /* SwanKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwanKit.h; sourceTree = "<group>"; };
 		83B78C332530832F00D339A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -266,7 +266,7 @@
 				83B78CC725308B1600D339A7 /* ReporterFactory.swift */,
 				83B78CC925308B1600D339A7 /* ConsoleReporter.swift */,
 				83C4370C2532F20100A3B3B8 /* GraphReporter.swift */,
-				83607CB927E9D1B60009532A /* GraphBinaryReporter.swift */,
+				83607CB927E9D1B60009532A /* GraphSymbolReporter.swift */,
 				832E9DF727EA220A00EB6CC7 /* GraphFile.swift */,
 				83B78CCA25308B1600D339A7 /* Reporter.swift */,
 			);
@@ -426,7 +426,7 @@
 				83B78CA12530898200D339A7 /* Dictionary+Extension.swift in Sources */,
 				83B78CA22530898200D339A7 /* SwiftSyntax+Extension.swift in Sources */,
 				83B78CA32530898200D339A7 /* Array+Extension.swift in Sources */,
-				83607CBA27E9D1B60009532A /* GraphBinaryReporter.swift in Sources */,
+				83607CBA27E9D1B60009532A /* GraphSymbolReporter.swift in Sources */,
 				83B78CA42530898200D339A7 /* Logging.swift in Sources */,
 				83B78CD125308B2400D339A7 /* Reporter.swift in Sources */,
 				83B78CA52530898200D339A7 /* LogLevel.swift in Sources */,

@@ -15,8 +15,8 @@ public enum ReporterType: String, Decodable {
     /// Export dot for graphviz
     case graphviz
 
-    /// Export dot(binary) for graphviz
-    case graphvizBinary
+    /// Export symbols dot for graphviz
+    case graphvizSymbol
 
     /// Export File graph - dot for graphviz
     case graphvizFile
