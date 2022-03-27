@@ -62,7 +62,7 @@ extension Analyzer {
     /// - Parameter source: The source code to detect.
     private func analyze(source: SourceDetail) -> [SymbolOccurrence] {
         let symbols = sourceKitserver.findWorkspaceSymbols(matching: source.name)
-
+        print("\(source.name) => \(symbols)")
         // If not find symbol of source, means source used.
         guard let symbol = symbols.unique(of: source) else {
             return []
@@ -81,7 +81,7 @@ extension Analyzer {
         
         let symbolOccurrenceResults = sourceKitserver.occurrences(
             ofUSR: symbol.symbol.usr,
-            roles: [.reference],
+            roles: [.reference, .calledBy, .receivedBy, .canonical, .containedBy, .definition, .declaration, .extendedBy],
             workspace: workSpace)
                    
         return symbolOccurrenceResults
@@ -91,7 +91,7 @@ extension Analyzer {
 
         let symbolOccurrenceResults = sourceKitserver.occurrences(
             ofUSR: symbol.usr,
-            roles: [.reference],
+            roles: [.reference, .calledBy, .canonical, .containedBy, .definition, .declaration, .extendedBy, .childOf, .ibTypeOf],
             workspace: workSpace)
                    
         return symbolOccurrenceResults

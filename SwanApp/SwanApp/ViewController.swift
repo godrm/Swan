@@ -48,7 +48,7 @@ class ViewController: NSViewController {
                 targetURL.appendPathComponent(Self.Constant.DATASTORE)
                 options.indexStorePath = targetURL.path
                 options.path = project
-                options.mode = .graphvizSymbol
+                options.mode = .graphvizFile
                 let sources = self.analyze(with: options)
                 self.report(for: sources, with: options)
             }
@@ -69,15 +69,15 @@ class ViewController: NSViewController {
     
     private func report(for sources: [SourceDetail:[SymbolOccurrence]], with options: CommandLineOptions) {
         do {
-            let configuration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
+            let configuration = try createConfiguration(options: options, outputFile: "swan.file.pdf")
             let outputs = configuration.reporter.report(configuration, sources: sources)
             if options.mode != .console {
                 preview(outputs)
             }
             
             var options = options
-            options.mode = .graphvizFile
-            let fileConfiguration = try createConfiguration(options: options, outputFile: "swan.file.pdf")
+            options.mode = .graphvizSymbol
+            let fileConfiguration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
             let fileOutputs = fileConfiguration.reporter.report(fileConfiguration, sources: sources)
             if options.mode != .console {
                 preview(fileOutputs)

@@ -26,8 +26,7 @@ class SourceKitServer {
           ignoreCase: true
         ) { symbol in
             if !symbol.location.isSystem &&
-                !symbol.roles.contains(.accessorOf) &&
-                symbol.roles.contains(.definition) {
+                !symbol.roles.contains(.accessorOf) {
             symbolOccurrenceResults.append(symbol)
           }
           return true

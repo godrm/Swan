@@ -23,23 +23,24 @@ func checkBlacklist(source: SourceDetail) -> Bool {
 }
 
 /// The sources in blacklist ignore.
-let blacklistSources: [SourceDetail] = [SourceDetail(name: "AppDelegate", sourceKind: .class),
-                                        SourceDetail(name: "SceneDelegate", sourceKind: .class),
-                                        SourceDetail(name: "application(_:didFinishLaunchingWithOptions:)", sourceKind: .function),
-                                        SourceDetail(name: "applicationWillResignActive(_:) ", sourceKind: .function),
-                                        SourceDetail(name: "applicationDidEnterBackground(_:)", sourceKind: .function),
-                                        SourceDetail(name: "applicationWillEnterForeground(_:)", sourceKind: .function),
-                                        SourceDetail(name: "applicationDidBecomeActive(_:)", sourceKind: .function),
-                                        SourceDetail(name: "applicationWillTerminate(_:)", sourceKind: .function),
-                                        SourceDetail(name: "applicationDidFinishLaunching(_:) ", sourceKind: .function),
-                                        SourceDetail(name: "applicationDidReceiveMemoryWarning(_:)", sourceKind: .function),
-                                        SourceDetail(name: "application(_:configurationForConnecting:options:)", sourceKind: .function),
-                                        SourceDetail(name: "viewDidLoad()", sourceKind: .function),
-                                        SourceDetail(name: "viewDidAppear(_:)", sourceKind: .function),
-                                        SourceDetail(name: "viewWillAppear(_:)", sourceKind: .function),
-                                        SourceDetail(name: "viewWillDisappear(_:)", sourceKind: .function),
-                                        SourceDetail(name: "viewDidDisappear(_:)", sourceKind: .function),
-                                        SourceDetail(name: "CodingKeys", sourceKind: .enum),
-                                        SourceDetail(name: "NotificationService", sourceKind: .class)
-                                        ]
+let blacklistSources: [SourceDetail] = []
+//[SourceDetail(name: "AppDelegate", sourceKind: .class),
+//                                        SourceDetail(name: "SceneDelegate", sourceKind: .class),
+//                                        SourceDetail(name: "application(_:didFinishLaunchingWithOptions:)", sourceKind: .function),
+//                                        SourceDetail(name: "applicationWillResignActive(_:) ", sourceKind: .function),
+//                                        SourceDetail(name: "applicationDidEnterBackground(_:)", sourceKind: .function),
+//                                        SourceDetail(name: "applicationWillEnterForeground(_:)", sourceKind: .function),
+//                                        SourceDetail(name: "applicationDidBecomeActive(_:)", sourceKind: .function),
+//                                        SourceDetail(name: "applicationWillTerminate(_:)", sourceKind: .function),
+//                                        SourceDetail(name: "applicationDidFinishLaunching(_:) ", sourceKind: .function),
+//                                        SourceDetail(name: "applicationDidReceiveMemoryWarning(_:)", sourceKind: .function),
+//                                        SourceDetail(name: "application(_:configurationForConnecting:options:)", sourceKind: .function),
+//                                        SourceDetail(name: "viewDidLoad()", sourceKind: .function),
+//                                        SourceDetail(name: "viewDidAppear(_:)", sourceKind: .function),
+//                                        SourceDetail(name: "viewWillAppear(_:)", sourceKind: .function),
+//                                        SourceDetail(name: "viewWillDisappear(_:)", sourceKind: .function),
+//                                        SourceDetail(name: "viewDidDisappear(_:)", sourceKind: .function),
+//                                        SourceDetail(name: "CodingKeys", sourceKind: .enum),
+//                                        SourceDetail(name: "NotificationService", sourceKind: .class)
+//                                        ]
 
