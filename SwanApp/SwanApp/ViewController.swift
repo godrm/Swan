@@ -16,6 +16,7 @@ class ViewController: NSViewController {
         static let DATASTORE = "DataStore"
         static let TARGET_DIR = "TARGET_BUILD_DIR"
         static let PROJECT_DIR = "PROJECT_DIR"
+        static let PROJECT_FILE_PATH = "PROJECT_FILE_PATH"
         static let XC_PROJECT = ".xcodeproj"
         static let XC_WORKSPACE = ".xcworkspace"
     }
@@ -37,7 +38,7 @@ class ViewController: NSViewController {
         
         NotificationCenter.default.addObserver(forName: ProjectDragView.NotificationName.didDropURL, object: nil, queue: nil) { (notification) in
             guard let url = notification.userInfo?["url"] as? URL else { return }
-            self.grepBuildDirectory(for: url) { (target, project) in
+            self.grepBuildDirectory(for: url) { (target, project, project_filepath) in
                 guard target.count > 0, project.count > 0 else { return }
                 var options = CommandLineOptions()
                 var targetURL = URL(fileURLWithPath: target)
@@ -48,6 +49,7 @@ class ViewController: NSViewController {
                 targetURL.appendPathComponent(Self.Constant.DATASTORE)
                 options.indexStorePath = targetURL.path
                 options.path = project
+                options.project_filepath = project_filepath
                 options.mode = .graphvizFile
                 let sources = self.analyze(with: options)
                 self.report(for: sources, with: options)
@@ -117,7 +119,7 @@ class ViewController: NSViewController {
         try? aTask.run()
     }
     
-    private func grepProjectSetting(for url:URL, completeHandler: @escaping (String, String) -> Void ) {
+    private func grepProjectSetting(for url:URL, completeHandler: @escaping (String, String, String) -> Void ) {
         runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.SHOW_SETTING, Self.Argument.PROJECT, url.path]) {
             guard let observer = self.outputObserver else { return }
             NotificationCenter.default.removeObserver(observer)
@@ -125,6 +127,7 @@ class ViewController: NSViewController {
             guard let settings = builds?.split(separator: "\n") else { return }
             var target_build_dir = ""
             var project_dir = ""
+            var project_file_path = ""
             for setting in settings {
                 if setting.contains(Self.Constant.TARGET_DIR){
                     target_build_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
@@ -132,8 +135,11 @@ class ViewController: NSViewController {
                 else if setting.contains(Self.Constant.PROJECT_DIR) {
                     project_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
                 }
+                else if setting.contains(Self.Constant.PROJECT_FILE_PATH) {
+                    project_file_path = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
+                }
             }
-            completeHandler(target_build_dir, project_dir)
+            completeHandler(target_build_dir, project_dir, project_file_path)
         }
     }
     
@@ -158,7 +164,7 @@ class ViewController: NSViewController {
         }
     }
     
-    private func grepWorkspaceSchemeSetting(for url:URL, scheme: String, completeHandler: @escaping (String, String) -> Void ) {
+    private func grepWorkspaceSchemeSetting(for url:URL, scheme: String, completeHandler: @escaping (String, String, String) -> Void ) {
         runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.SHOW_SETTING, Self.Argument.WORKSPACE, url.path, Self.Argument.SCHEME, scheme]) {
             guard let observer = self.outputObserver else { return }
             NotificationCenter.default.removeObserver(observer)
@@ -166,6 +172,7 @@ class ViewController: NSViewController {
             guard let settings = builds?.split(separator: "\n") else { return }
             var target_build_dir = ""
             var project_dir = ""
+            var project_file_path = ""
             for setting in settings {
                 if setting.contains(Self.Constant.TARGET_DIR){
                     target_build_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
@@ -173,19 +180,22 @@ class ViewController: NSViewController {
                 else if setting.contains(Self.Constant.PROJECT_DIR) {
                     project_dir = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
                 }
+                else if setting.contains(Self.Constant.PROJECT_FILE_PATH) {
+                    project_file_path = String(setting.split(separator: "=").last ?? "").trimmingCharacters(in: CharacterSet.whitespaces)
+                }
             }
-            completeHandler(target_build_dir, project_dir)
+            completeHandler(target_build_dir, project_dir, project_file_path)
         }
     }
 
-    private func grepBuildDirectory(for project:URL, completeHandler: @escaping (String, String) -> Void ) {
+    private func grepBuildDirectory(for project:URL, completeHandler: @escaping (String, String, String) -> Void ) {
         let isWorkspace = project.lastPathComponent.contains(Self.Constant.XC_WORKSPACE)
         let isProject = project.lastPathComponent.contains(Self.Constant.XC_PROJECT)
         guard isWorkspace || isProject else { return }
 
         if isProject {
-            grepProjectSetting(for: project) { (target_dir, project_dir) in
-                completeHandler(target_dir, project_dir)
+            grepProjectSetting(for: project) { (target_dir, project_dir, project_file_path) in
+                completeHandler(target_dir, project_dir, project_file_path)
             }
         }
         else if isWorkspace {
@@ -206,8 +216,8 @@ class ViewController: NSViewController {
                     
                     guard selected == .alertFirstButtonReturn,
                           let scheme = selectButton.selectedItem?.title else { return }
-                    self.grepWorkspaceSchemeSetting(for: project, scheme: scheme) { (target_dir, project_dir) in
-                        completeHandler(target_dir, project_dir)
+                    self.grepWorkspaceSchemeSetting(for: project, scheme: scheme) { (target_dir, project_dir, project_file_path) in
+                        completeHandler(target_dir, project_dir, project_file_path)
                     }
                 }
             }

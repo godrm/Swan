@@ -143,15 +143,16 @@ public struct GraphSymbolReporter: Reporter {
                     node?.shape = .box
                     node?.textColor = Color.named(.darkseagreen4)
                 }
-                nodeMap[selected.symbol.usr] = node!
             }
 
             for relation in selected.relations {
-                if relation.roles.contains(.childOf) &&
+                let founded = nodeMap[selected.symbol.usr] != nil
+                if !founded && relation.roles.contains(.childOf) &&
                     ( relation.symbol.kind == .struct ||
                       relation.symbol.kind == .class ||
                       relation.symbol.kind == .enum) {
                     file?.append(node!)
+                    nodeMap[selected.symbol.usr] = node!
                     usrToFileMap[selected.symbol.usr] = selected.location.path
                     continue
                 }
@@ -172,15 +173,18 @@ public struct GraphSymbolReporter: Reporter {
                     continue
                 }
                                 
-                if relation.roles.contains(.receivedBy) {
+                if relation.roles.contains(.receivedBy) && nodeMap[selected.symbol.usr] == nil {
                     guard let recvFilePath = usrToFileMap[relation.symbol.usr],
                           let recvFile = fileMap[recvFilePath] else { continue }
+                    nodeMap[selected.symbol.usr] = node!
+                    usrToFileMap[selected.symbol.usr] = recvFilePath
                     recvFile.append(node!)
                     continue
                 }
                 
-                if usrToFileMap[selected.symbol.usr] == nil {
+                if nodeMap[selected.symbol.usr] == nil {
                     file?.append(node!)
+                    nodeMap[selected.symbol.usr] = node!
                     usrToFileMap[selected.symbol.usr] = selected.location.path
                 }
 

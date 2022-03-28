@@ -7,10 +7,14 @@
 import Foundation
 import IndexStoreDB
 import TSCBasic
+import TSCUtility
 
 public struct CommandLineOptions {
     /// The project path
     public var path: String = ""
+
+    /// The xcodeproj file path
+    public var project_filepath: String = ""
 
     /// The mode to report
     ///
@@ -42,7 +46,11 @@ public func createConfiguration(options: CommandLineOptions, outputFile: String 
         throw PEError.fiendCurrentWorkingDirectoryFailed
     }
     let rootPath = AbsolutePath(options.path, relativeTo: cwd)
-    let configuration = Configuration(projectPath: rootPath, indexStorePath: indexStorePath.asURL.path, reportType: options.mode, outputFile: outputFile)
+    let configuration = Configuration(projectPath: rootPath,
+                                      projectFilePath: AbsolutePath(options.project_filepath),
+                                      indexStorePath: indexStorePath.asURL.path,
+                                      reportType: options.mode,
+                                      outputFile: outputFile)
     
     return configuration
 }

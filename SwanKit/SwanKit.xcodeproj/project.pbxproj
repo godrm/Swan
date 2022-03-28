@@ -56,6 +56,7 @@
 		83B78CD125308B2400D339A7 /* Reporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CCA25308B1600D339A7 /* Reporter.swift */; };
 		83B78CE2253178DD00D339A7 /* SwanKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CE1253178DD00D339A7 /* SwanKit.swift */; };
 		83C4370D2532F20100A3B3B8 /* GraphReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C4370C2532F20100A3B3B8 /* GraphReporter.swift */; };
+		83D4345727F1BB5E001CEB84 /* XcodeProj in Frameworks */ = {isa = PBXBuildFile; productRef = 83D4345627F1BB5E001CEB84 /* XcodeProj */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,6 +142,7 @@
 				83B78C4F253083E000D339A7 /* SwiftSyntaxBuilder in Frameworks */,
 				83607CB827E822A90009532A /* SwiftSyntaxParser in Frameworks */,
 				83B78C632530851500D339A7 /* SwiftToolsSupport in Frameworks */,
+				83D4345727F1BB5E001CEB84 /* XcodeProj in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,6 +324,7 @@
 				8301E9BE2533171C00DFAABE /* GraphVizBuilder */,
 				8301E9C02533171C00DFAABE /* GraphViz */,
 				83607CB727E822A90009532A /* SwiftSyntaxParser */,
+				83D4345627F1BB5E001CEB84 /* XcodeProj */,
 			);
 			productName = SwanKit;
 			productReference = 83B78C2F2530832F00D339A7 /* SwanKit.framework */;
@@ -377,6 +380,7 @@
 				83B78C582530849200D339A7 /* XCRemoteSwiftPackageReference "indexstore-db" */,
 				83B78C612530851500D339A7 /* XCRemoteSwiftPackageReference "swift-tools-support-core" */,
 				8301E9BD2533171C00DFAABE /* XCRemoteSwiftPackageReference "GraphViz" */,
+				83D4345527F1BB5E001CEB84 /* XCRemoteSwiftPackageReference "XcodeProj" */,
 			);
 			productRefGroup = 83B78C302530832F00D339A7 /* Products */;
 			projectDirPath = "";
@@ -745,6 +749,14 @@
 				kind = branch;
 			};
 		};
+		83D4345527F1BB5E001CEB84 /* XCRemoteSwiftPackageReference "XcodeProj" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tuist/XcodeProj";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -782,6 +794,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 83B78C612530851500D339A7 /* XCRemoteSwiftPackageReference "swift-tools-support-core" */;
 			productName = SwiftToolsSupport;
+		};
+		83D4345627F1BB5E001CEB84 /* XcodeProj */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83D4345527F1BB5E001CEB84 /* XCRemoteSwiftPackageReference "XcodeProj" */;
+			productName = XcodeProj;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

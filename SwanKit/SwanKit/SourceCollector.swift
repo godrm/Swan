@@ -10,6 +10,7 @@ import SwiftSyntax
 import SwiftSyntaxParser
 import TSCBasic
 import IndexStoreDB
+import XcodeProj
 
 public typealias FileSystem = TSCBasic.FileSystem
 typealias SafeSourceExtensions = ThreadSafe<[String: SourceDetail]>
@@ -64,15 +65,20 @@ class SourceCollector {
         let safeSources = ThreadSafe<[Symbol]>([])
         DispatchQueue.concurrentPerform(iterations: files.count) { index in
             let symbols = indexDB.symbols(inFilePath: files[index].pathString)
-//            guard let syntax = try? SyntaxParser.parse(files[index].asURL) else {
-//                return
-//            }
-//
             safeSources.atomically { $0.append(contentsOf: symbols) }
         }
         symbols = safeSources.value
     }
 
+    func collectSymbols(with indexDB: IndexStoreDB, for buildFiles: [PBXBuildFile]) {
+        let files = computeContents(with: buildFiles)
+        let safeSources = ThreadSafe<[Symbol]>([])
+        DispatchQueue.concurrentPerform(iterations: files.count) { index in
+            let symbols = indexDB.symbols(inFilePath: files[index].pathString)
+            safeSources.atomically { $0.append(contentsOf: symbols) }
+        }
+        symbols = safeSources.value
+    }
 
     /// Compute the contents of the files in a target.
     ///
@@ -106,5 +112,40 @@ class SourceCollector {
         }
 
         return contents
+    }
+    
+    /// Compute project build phase files
+    private func computeContents(with buildFiles: [PBXBuildFile]) -> [AbsolutePath] {
+        var contents: [AbsolutePath] = []
+
+        for buildFile in buildFiles {
+            guard let sourcefile = buildFile.file else {
+                print(buildFile.product?.productName)
+                continue
+            }
+            let parentPath = sourcefile.parentPath() ?? ""
+            let fullPath = AbsolutePath("\(targetPath.pathString)\(parentPath)/\(sourcefile.path ?? sourcefile.name!)")
+            if self.excluded.contains(fullPath) { continue }
+            // Append and continue if the path doesn't have an extension or is not a directory and is not in lacklistFiles.
+            if fullPath.extension == "swift" && !blacklistFiles.contains(fullPath.basenameWithoutExt) {
+                contents.append(fullPath)
+                continue
+            }
+        }
+        
+        return contents
+    }
+
+}
+
+extension PBXFileElement {
+    fileprivate func parentPath() -> String? {
+        guard let parent = self.parent, let parentPath = parent.path else {
+            return nil
+        }
+        if let grandParentPath = parent.parentPath() {
+            return "/\(grandParentPath)/\(parentPath)"
+        }
+        return "/\(parentPath)"
     }
 }

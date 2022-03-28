@@ -20,7 +20,10 @@ public struct Configuration {
     
     /// The  project path
     public let projectPath: AbsolutePath
-    
+
+    /// The xcodeproj path
+    public let projectFilePath: AbsolutePath
+
     /// The project index storePath path
     public let indexStorePath: String
     
@@ -36,7 +39,8 @@ public struct Configuration {
                   excluded: [AbsolutePath],
                   blacklistFiles: [String],
                   blacklistSymbols: [String],
-                  outputFile: AbsolutePath) {
+                  outputFile: AbsolutePath,
+                  projectFilePath: AbsolutePath) {
         self.projectPath = projectPath
         self.indexStorePath = indexStorePath
         self.indexDatabasePath = indexDatabasePath ?? NSTemporaryDirectory() + "index_\(getpid())"
@@ -47,9 +51,10 @@ public struct Configuration {
         self.blacklistFiles = blacklistFiles
         self.blacklistSymbols = blacklistSymbols
         self.outputFile = outputFile
+        self.projectFilePath = projectFilePath
     }
     
-    public init(projectPath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil, reportType: ReporterType = .console, outputFile: String = "swan.output.pdf") {
+    public init(projectPath: AbsolutePath, projectFilePath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil, reportType: ReporterType = .console, outputFile: String = "swan.output.pdf") {
         let reporter = ReporterFactory.make(reportType)
         let rules = RuleFactory.make()
         let outputFilePath = AbsolutePath(projectPath.asURL.path).appending(component: outputFile)
@@ -62,6 +67,7 @@ public struct Configuration {
                   excluded: (["Pods"]).map{ projectPath.appending(component: $0)} ,
                   blacklistFiles: [],
                   blacklistSymbols: [],
-                  outputFile: outputFilePath)
+                  outputFile: outputFilePath,
+                  projectFilePath: projectFilePath)
     }
 }

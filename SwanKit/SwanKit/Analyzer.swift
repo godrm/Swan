@@ -8,12 +8,14 @@
 import Foundation
 import IndexStoreDB
 import TSCBasic
+import XcodeProj
 
 public final class Analyzer {
     private let sourceCodeCollector: SourceCollector
     private let sourceKitserver: SourceKitServer
     private let workSpace: Workspace
     private let configuration: Configuration
+    private let xcodeproj : XcodeProj
     
     public init(configuration: Configuration) throws {
         sourceCodeCollector = SourceCollector(rootPath: configuration.projectPath,
@@ -23,7 +25,8 @@ public final class Analyzer {
                                               indexDatabasePath: configuration.indexDatabasePath)
         workSpace = try Workspace(buildSettings: buildSystem)
         workSpace.index?.pollForUnitChangesAndWait()
-        sourceKitserver = SourceKitServer(workspace: workSpace)        
+        sourceKitserver = SourceKitServer(workspace: workSpace)
+        xcodeproj = try XcodeProj.init(pathString: configuration.projectFilePath.pathString)
     }
     
     public func analyze() throws -> [SourceDetail: [SymbolOccurrence]] {
@@ -42,7 +45,7 @@ public final class Analyzer {
     
     public func analyzeSymbols() throws -> [SymbolOccurrence] {
         let foundSource = ThreadSafe<[SymbolOccurrence]>([])
-        sourceCodeCollector.collectSymbols(with: workSpace.index!)
+        sourceCodeCollector.collectSymbols(with: workSpace.index!, for: xcodeproj.pbxproj.buildFiles)
 
         DispatchQueue.concurrentPerform(iterations: sourceCodeCollector.symbols.count) { (index) in
                 let symbol = sourceCodeCollector.symbols[index]
