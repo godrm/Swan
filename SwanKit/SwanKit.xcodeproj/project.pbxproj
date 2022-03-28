@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8301E9BF2533171C00DFAABE /* GraphVizBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = 8301E9BE2533171C00DFAABE /* GraphVizBuilder */; };
-		8301E9C12533171C00DFAABE /* GraphViz in Frameworks */ = {isa = PBXBuildFile; productRef = 8301E9C02533171C00DFAABE /* GraphViz */; };
+		832582CD27F2085C005417C7 /* GraphViz in Frameworks */ = {isa = PBXBuildFile; productRef = 832582CC27F2085C005417C7 /* GraphViz */; };
 		832E9DF827EA220A00EB6CC7 /* GraphFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832E9DF727EA220A00EB6CC7 /* GraphFile.swift */; };
 		83607CB827E822A90009532A /* SwiftSyntaxParser in Frameworks */ = {isa = PBXBuildFile; productRef = 83607CB727E822A90009532A /* SwiftSyntaxParser */; };
 		83607CBA27E9D1B60009532A /* GraphSymbolReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83607CB927E9D1B60009532A /* GraphSymbolReporter.swift */; };
@@ -55,7 +54,6 @@
 		83B78CCF25308B2200D339A7 /* ConsoleReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CC925308B1600D339A7 /* ConsoleReporter.swift */; };
 		83B78CD125308B2400D339A7 /* Reporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CCA25308B1600D339A7 /* Reporter.swift */; };
 		83B78CE2253178DD00D339A7 /* SwanKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CE1253178DD00D339A7 /* SwanKit.swift */; };
-		83C4370D2532F20100A3B3B8 /* GraphReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C4370C2532F20100A3B3B8 /* GraphReporter.swift */; };
 		83D4345727F1BB5E001CEB84 /* XcodeProj in Frameworks */ = {isa = PBXBuildFile; productRef = 83D4345627F1BB5E001CEB84 /* XcodeProj */; };
 /* End PBXBuildFile section */
 
@@ -127,7 +125,6 @@
 		83B78CC925308B1600D339A7 /* ConsoleReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleReporter.swift; sourceTree = "<group>"; };
 		83B78CCA25308B1600D339A7 /* Reporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reporter.swift; sourceTree = "<group>"; };
 		83B78CE1253178DD00D339A7 /* SwanKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwanKit.swift; sourceTree = "<group>"; };
-		83C4370C2532F20100A3B3B8 /* GraphReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphReporter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,9 +133,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				83B78C4D253083E000D339A7 /* SwiftSyntax in Frameworks */,
-				8301E9BF2533171C00DFAABE /* GraphVizBuilder in Frameworks */,
 				83B78C5E2530849200D339A7 /* IndexStoreDB in Frameworks */,
-				8301E9C12533171C00DFAABE /* GraphViz in Frameworks */,
+				832582CD27F2085C005417C7 /* GraphViz in Frameworks */,
 				83B78C4F253083E000D339A7 /* SwiftSyntaxBuilder in Frameworks */,
 				83607CB827E822A90009532A /* SwiftSyntaxParser in Frameworks */,
 				83B78C632530851500D339A7 /* SwiftToolsSupport in Frameworks */,
@@ -267,7 +263,6 @@
 			children = (
 				83B78CC725308B1600D339A7 /* ReporterFactory.swift */,
 				83B78CC925308B1600D339A7 /* ConsoleReporter.swift */,
-				83C4370C2532F20100A3B3B8 /* GraphReporter.swift */,
 				83607CB927E9D1B60009532A /* GraphSymbolReporter.swift */,
 				832E9DF727EA220A00EB6CC7 /* GraphFile.swift */,
 				83B78CCA25308B1600D339A7 /* Reporter.swift */,
@@ -321,10 +316,9 @@
 				83B78C4E253083E000D339A7 /* SwiftSyntaxBuilder */,
 				83B78C5D2530849200D339A7 /* IndexStoreDB */,
 				83B78C622530851500D339A7 /* SwiftToolsSupport */,
-				8301E9BE2533171C00DFAABE /* GraphVizBuilder */,
-				8301E9C02533171C00DFAABE /* GraphViz */,
 				83607CB727E822A90009532A /* SwiftSyntaxParser */,
 				83D4345627F1BB5E001CEB84 /* XcodeProj */,
+				832582CC27F2085C005417C7 /* GraphViz */,
 			);
 			productName = SwanKit;
 			productReference = 83B78C2F2530832F00D339A7 /* SwanKit.framework */;
@@ -379,8 +373,8 @@
 				83B78C4B253083E000D339A7 /* XCRemoteSwiftPackageReference "swift-syntax" */,
 				83B78C582530849200D339A7 /* XCRemoteSwiftPackageReference "indexstore-db" */,
 				83B78C612530851500D339A7 /* XCRemoteSwiftPackageReference "swift-tools-support-core" */,
-				8301E9BD2533171C00DFAABE /* XCRemoteSwiftPackageReference "GraphViz" */,
 				83D4345527F1BB5E001CEB84 /* XCRemoteSwiftPackageReference "XcodeProj" */,
+				832582CB27F2085C005417C7 /* XCRemoteSwiftPackageReference "GraphViz" */,
 			);
 			productRefGroup = 83B78C302530832F00D339A7 /* Products */;
 			projectDirPath = "";
@@ -443,7 +437,6 @@
 				83B78CCB25308B1D00D339A7 /* ReporterFactory.swift in Sources */,
 				83B78C74253086D900D339A7 /* Workspace.swift in Sources */,
 				83B78C71253086B900D339A7 /* SourceCollector.swift in Sources */,
-				83C4370D2532F20100A3B3B8 /* GraphReporter.swift in Sources */,
 				83B78C8C2530886100D339A7 /* RuleType.swift in Sources */,
 				83B78C7A253086FD00D339A7 /* DatabaseBuildSystem.swift in Sources */,
 				83B78CA82530899E00D339A7 /* SwiftSourceCollectPipeline.swift in Sources */,
@@ -717,7 +710,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8301E9BD2533171C00DFAABE /* XCRemoteSwiftPackageReference "GraphViz" */ = {
+		832582CB27F2085C005417C7 /* XCRemoteSwiftPackageReference "GraphViz" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/godrm/GraphViz";
 			requirement = {
@@ -760,14 +753,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8301E9BE2533171C00DFAABE /* GraphVizBuilder */ = {
+		832582CC27F2085C005417C7 /* GraphViz */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8301E9BD2533171C00DFAABE /* XCRemoteSwiftPackageReference "GraphViz" */;
-			productName = GraphVizBuilder;
-		};
-		8301E9C02533171C00DFAABE /* GraphViz */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8301E9BD2533171C00DFAABE /* XCRemoteSwiftPackageReference "GraphViz" */;
+			package = 832582CB27F2085C005417C7 /* XCRemoteSwiftPackageReference "GraphViz" */;
 			productName = GraphViz;
 		};
 		83607CB727E822A90009532A /* SwiftSyntaxParser */ = {

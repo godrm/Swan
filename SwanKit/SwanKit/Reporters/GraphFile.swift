@@ -7,6 +7,7 @@
 import Foundation
 import IndexStoreDB
 import GraphViz
+import DOT
 
 public struct GraphFileReporter: Reporter {
     private func filename(from path:String) -> String {
@@ -14,7 +15,7 @@ public struct GraphFileReporter: Reporter {
         return url.lastPathComponent
     }
     
-    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) -> [String] {
+    public func report(_ configuration: Configuration, occurrences: [SymbolOccurrence]) -> [String] {
         var graph = Graph(directed: true)
         var moduleMap = Dictionary<String, Subgraph>()
         var fileMap = Dictionary<String, Node>()
@@ -22,8 +23,7 @@ public struct GraphFileReporter: Reporter {
         var moduleIndex = 1
         var edges = Set<Edge>()
 
-        let allSymbols = sources[SourceDetail.init()]!
-        for selected in allSymbols {
+        for selected in occurrences {
             var module : Subgraph? = moduleMap[selected.location.moduleName]
             if module == nil {
                 module = Subgraph(id: "cluster_m\(moduleIndex)", label: selected.location.moduleName)
@@ -34,7 +34,7 @@ public struct GraphFileReporter: Reporter {
                 moduleMap[selected.location.moduleName] = module
                 graph.append(module!)
             }
-            
+
             let name = filename(from: selected.location.path)
             var node = fileMap[selected.location.path]
             if node == nil {
@@ -50,8 +50,8 @@ public struct GraphFileReporter: Reporter {
                 usrToFileMap[selected.symbol.usr] = selected.location.path
             }
         }
-            
-        for selected in allSymbols {
+
+        for selected in occurrences {
             guard let filePath = usrToFileMap[selected.symbol.usr] else { continue }
             guard let node = fileMap[filePath] else { continue }
             if selected.symbol.kind == .parameter { continue }
@@ -74,12 +74,12 @@ public struct GraphFileReporter: Reporter {
                          selected.symbol.kind == .instanceMethod) {
                     continue
                 }
-                                
+
                 if relation.roles.contains(.receivedBy) {
                     usrToFileMap[relation.symbol.usr] = filePath
                     continue
                 }
-                
+
                 guard let filePath = usrToFileMap[relation.symbol.usr] else { continue }
                 if let fromNode = fileMap[filePath] {
                     if fromNode == node { continue }
@@ -101,8 +101,7 @@ public struct GraphFileReporter: Reporter {
             }
         }
 
-        // Render image using dot layout algorithm
-        _ = try! graph.render(using: .dot, to: .pdf, output: configuration.outputFile.pathString)
+        _ = try? graph.render(using: LayoutAlgorithm.dot, to: Format.pdf, output: configuration.outputFile.pathString)
         return [configuration.outputFile.pathString]
     }
 }

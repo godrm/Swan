@@ -7,6 +7,7 @@
 import Foundation
 import IndexStoreDB
 import GraphViz
+import DOT
 
 public struct GraphSymbolReporter: Reporter {
     private func filename(from path:String) -> String {
@@ -14,7 +15,7 @@ public struct GraphSymbolReporter: Reporter {
         return url.lastPathComponent
     }
     
-    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) -> [String] {
+    public func report(_ configuration: Configuration, occurrences: [SymbolOccurrence]) -> [String] {
         var graph = Graph(directed: true)
         var moduleMap = Dictionary<String, Subgraph>()
         var fileMap = Dictionary<String, Subgraph>()
@@ -24,8 +25,7 @@ public struct GraphSymbolReporter: Reporter {
         var clusterIndex = 1
         var moduleIndex = 1
 
-        let allSymbols = sources[SourceDetail.init()]!
-        for selected in allSymbols {
+        for selected in occurrences {
             var module : Subgraph? = moduleMap[selected.location.moduleName]
             if module == nil {
                 module = Subgraph(id: "cluster_m\(moduleIndex)", label: selected.location.moduleName)
@@ -64,22 +64,6 @@ public struct GraphSymbolReporter: Reporter {
                     continue
                 }
                 
-//                if selected.symbol.kind == .enum ||
-//                    selected.symbol.kind == .struct ||
-//                    selected.symbol.kind == .class {
-//                    var type : Subgraph? = typeMap[selected.location.path]
-//                    if type == nil {
-//                        type = Subgraph(id: "cluster_f\(clusterIndex)", label: selected.symbol.name)
-//                        clusterIndex += 1
-//                        type?.textColor = Color.named(.blue)
-//                        type?.borderWidth = 1
-//                        type?.borderColor = Color.named(.blue)
-//                        typeMap[selected.location.path] = type
-//                        file?.append(type!)
-//                    }
-//                    continue
-//                }
-                
                 var label = "\(selected.symbol.name)"
                 if (selected.symbol.kind == .protocol) {
                     label = "<<\(selected.symbol.name)>>"
@@ -110,7 +94,7 @@ public struct GraphSymbolReporter: Reporter {
             }
         }
             
-        for selected in allSymbols {
+        for selected in occurrences {
             let file : Subgraph? = fileMap[selected.location.path]
             
             var label = "\(selected.symbol.name)"
@@ -215,7 +199,7 @@ public struct GraphSymbolReporter: Reporter {
         }
         
         // Render image using dot layout algorithm
-        _ = try! graph.render(using: .dot, to: .pdf, output: configuration.outputFile.pathString)
+        _ = try? graph.render(using: LayoutAlgorithm.dot, to: Format.pdf, output: configuration.outputFile.pathString)
         return [configuration.outputFile.pathString]
     }
 }

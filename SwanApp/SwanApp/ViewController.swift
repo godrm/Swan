@@ -50,39 +50,39 @@ class ViewController: NSViewController {
                 options.indexStorePath = targetURL.path
                 options.path = project
                 options.project_filepath = project_filepath
-                options.mode = .graphvizFile
+                options.mode = .graphviz
                 let sources = self.analyze(with: options)
                 self.report(for: sources, with: options)
             }
         }
     }
     
-    fileprivate func analyze(with options : CommandLineOptions) -> [SourceDetail:[SymbolOccurrence]] {
+    fileprivate func analyze(with options : CommandLineOptions) -> [SymbolOccurrence] {
         do {
             let configuration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
             let analyzer = try Analyzer(configuration: configuration)
             let symbols = try analyzer.analyzeSymbols()
-            return [SourceDetail.init(): symbols]
+            return symbols
         } catch {
             log(error.localizedDescription, level: .error)
         }
-        return [:]
+        return []
     }
     
-    private func report(for sources: [SourceDetail:[SymbolOccurrence]], with options: CommandLineOptions) {
+    private func report(for sources: [SymbolOccurrence], with options: CommandLineOptions) {
         do {
             let configuration = try createConfiguration(options: options, outputFile: "swan.file.pdf")
-            let outputs = configuration.reporter.report(configuration, sources: sources)
+//            let outputs = configuration.reporter.report(configuration, occurrences: sources)
             if options.mode != .console {
-                preview(outputs)
+//                preview(outputs)
             }
             
             var options = options
-            options.mode = .graphvizSymbol
+            options.mode = .graphvizFile
             let fileConfiguration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
-            let fileOutputs = fileConfiguration.reporter.report(fileConfiguration, sources: sources)
+//            let fileOutputs = fileConfiguration.reporter.report(fileConfiguration, occurrences: sources)
             if options.mode != .console {
-                preview(fileOutputs)
+//                preview(fileOutputs)
             }
         } catch {
             log(error.localizedDescription, level: .error)

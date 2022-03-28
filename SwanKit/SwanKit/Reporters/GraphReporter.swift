@@ -15,7 +15,7 @@ public struct GraphReporter: Reporter {
         return url.lastPathComponent
     }
     
-    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) -> [String] {
+    public func report(_ configuration: Configuration, sources: [SymbolOccurrence]) -> [String] {
         var graph = Graph(directed: true)
         var fileMap = Dictionary<String, Subgraph>()
         var nodeMap = Dictionary<String, Node>()

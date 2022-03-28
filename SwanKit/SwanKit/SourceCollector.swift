@@ -120,7 +120,7 @@ class SourceCollector {
 
         for buildFile in buildFiles {
             guard let sourcefile = buildFile.file else {
-                print(buildFile.product?.productName)
+//                print(buildFile.product?.productName)
                 continue
             }
             let parentPath = sourcefile.parentPath() ?? ""
