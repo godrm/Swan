@@ -8,6 +8,17 @@
 import Foundation
 import IndexStoreDB
 
+extension SymbolOccurrence : Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.symbol)
+        hasher.combine(self.roles)
+        for relation in self.relations {
+            hasher.combine(relation.symbol)
+            hasher.combine(relation.roles)
+        }
+    }
+}
+
 class SourceKitServer {
     
     let workspace: Workspace?
@@ -38,6 +49,11 @@ class SourceKitServer {
         guard let index = workspace.index else {
             return []
         }
-        return index.occurrences(ofUSR: usr, roles: roles)
+        var result: Set<SymbolOccurrence> = []
+        index.forEachSymbolOccurrence(byUSR: usr, roles: roles) { occur in
+            result.insert(occur)
+            return true
+        }
+        return Array(result)
     }
 }

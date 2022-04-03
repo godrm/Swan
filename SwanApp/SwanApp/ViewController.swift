@@ -50,7 +50,7 @@ class ViewController: NSViewController {
                 options.indexStorePath = targetURL.path
                 options.path = project
                 options.project_filepath = project_filepath
-                options.mode = .graphviz
+                options.mode = .console
                 let sources = self.analyze(with: options)
                 self.report(for: sources, with: options)
             }
@@ -72,18 +72,18 @@ class ViewController: NSViewController {
     private func report(for sources: [SymbolOccurrence], with options: CommandLineOptions) {
         do {
             let configuration = try createConfiguration(options: options, outputFile: "swan.file.pdf")
-//            let outputs = configuration.reporter.report(configuration, occurrences: sources)
+            let outputs = configuration.reporter.report(configuration, occurrences: sources)
             if options.mode != .console {
-//                preview(outputs)
+                preview(outputs)
             }
             
-            var options = options
-            options.mode = .graphvizFile
-            let fileConfiguration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
+//            var options = options
+//            options.mode = .graphvizFile
+//            let fileConfiguration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
 //            let fileOutputs = fileConfiguration.reporter.report(fileConfiguration, occurrences: sources)
-            if options.mode != .console {
+//            if options.mode != .console {
 //                preview(fileOutputs)
-            }
+//            }
         } catch {
             log(error.localizedDescription, level: .error)
         }

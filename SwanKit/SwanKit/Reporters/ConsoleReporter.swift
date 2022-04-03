@@ -14,7 +14,10 @@ public struct ConsoleReporter: Reporter {
         for occurrence in occurrences {
             result.append(occurrence.description)
         }
-        print(result.joined(separator: "\n"))
+        let report = result.joined(separator: "\n")
+        let data = report.data(using: .utf8)
+        try? data?.write(to: URL(fileURLWithPath: "/var/tmp/swan-report.txt"))
+        print(report)
         return result
     }
 }

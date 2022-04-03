@@ -15,6 +15,13 @@ import XcodeProj
 public typealias FileSystem = TSCBasic.FileSystem
 typealias SafeSourceExtensions = ThreadSafe<[String: SourceDetail]>
 
+extension Symbol : Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.usr)
+        hasher.combine(self.name)
+    }
+}
+
 /// Collects source code in the path.
 class SourceCollector {
 
@@ -72,12 +79,12 @@ class SourceCollector {
 
     func collectSymbols(with indexDB: IndexStoreDB, for buildFiles: [PBXBuildFile]) {
         let files = computeContents(with: buildFiles)
-        let safeSources = ThreadSafe<[Symbol]>([])
+        let safeSources = ThreadSafe<Set<Symbol>>([])
         DispatchQueue.concurrentPerform(iterations: files.count) { index in
             let symbols = indexDB.symbols(inFilePath: files[index].pathString)
-            safeSources.atomically { $0.append(contentsOf: symbols) }
+            safeSources.atomically { symbolMap in symbols.forEach{ symbolMap.insert($0) } }
         }
-        symbols = safeSources.value
+        symbols = Array(safeSources.value)
     }
 
     /// Compute the contents of the files in a target.
