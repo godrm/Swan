@@ -5,6 +5,9 @@
       location = "group:SwanKit/SwanKit.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:SwanCLI/Swan/Swan.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:SwanApp/SwanApp.xcodeproj">
    </FileRef>
 </Workspace>

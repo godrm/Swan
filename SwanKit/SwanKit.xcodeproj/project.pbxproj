@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		830D0D4D282B655500343F95 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830D0D4C282B655500343F95 /* Project.swift */; };
 		832582CD27F2085C005417C7 /* GraphViz in Frameworks */ = {isa = PBXBuildFile; productRef = 832582CC27F2085C005417C7 /* GraphViz */; };
 		832E9DF827EA220A00EB6CC7 /* GraphFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832E9DF727EA220A00EB6CC7 /* GraphFile.swift */; };
 		83607CB827E822A90009532A /* SwiftSyntaxParser in Frameworks */ = {isa = PBXBuildFile; productRef = 83607CB727E822A90009532A /* SwiftSyntaxParser */; };
@@ -82,6 +83,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		830D0D4C282B655500343F95 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		832E9DF727EA220A00EB6CC7 /* GraphFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphFile.swift; sourceTree = "<group>"; };
 		83607CB927E9D1B60009532A /* GraphSymbolReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphSymbolReporter.swift; sourceTree = "<group>"; };
 		83B78C2F2530832F00D339A7 /* SwanKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwanKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -192,6 +194,7 @@
 				83B78C332530832F00D339A7 /* Info.plist */,
 				83B78CE1253178DD00D339A7 /* SwanKit.swift */,
 				83B78C6B2530855700D339A7 /* Analyzer.swift */,
+				830D0D4C282B655500343F95 /* Project.swift */,
 				83B78CC325308A7500D339A7 /* Configuration.swift */,
 				83B78C73253086D900D339A7 /* Workspace.swift */,
 				83B78C76253086E900D339A7 /* SourceKitServer.swift */,
@@ -433,6 +436,7 @@
 				83B78C77253086E900D339A7 /* SourceKitServer.swift in Sources */,
 				83B78C832530882A00D339A7 /* SourceDetail.swift in Sources */,
 				83B78C802530880300D339A7 /* SourceLocation.swift in Sources */,
+				830D0D4D282B655500343F95 /* Project.swift in Sources */,
 				83B78CC125308A5300D339A7 /* CollectContext.swift in Sources */,
 				83B78CCB25308B1D00D339A7 /* ReporterFactory.swift in Sources */,
 				83B78C74253086D900D339A7 /* Workspace.swift in Sources */,

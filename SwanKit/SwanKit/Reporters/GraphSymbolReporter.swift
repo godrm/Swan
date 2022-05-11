@@ -199,7 +199,7 @@ public struct GraphSymbolReporter: Reporter {
         }
         
         // Render image using dot layout algorithm
-        _ = try? graph.render(using: LayoutAlgorithm.dot, to: Format.pdf, output: configuration.outputFile.pathString)
+        _ = try? graph.render(using: .dot, to: Format.pdf, output: configuration.outputFile.pathString)
         return [configuration.outputFile.pathString]
     }
 }

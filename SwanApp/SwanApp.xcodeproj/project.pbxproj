@@ -37,6 +37,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		836093622804786D004ECC4F /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		83B78CDA25308E3500D339A7 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -51,6 +61,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		836093542804786D004ECC4F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		836093562804786D004ECC4F /* XcodeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XcodeKit.framework; path = Library/Frameworks/XcodeKit.framework; sourceTree = DEVELOPER_DIR; };
 		83B78BF0253082D700D339A7 /* SwanApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwanApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		83B78BF3253082D700D339A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		83B78BF5253082D700D339A7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -153,6 +165,8 @@
 			isa = PBXGroup;
 			children = (
 				83B78CD725308E3500D339A7 /* SwanKit.framework */,
+				836093542804786D004ECC4F /* Cocoa.framework */,
+				836093562804786D004ECC4F /* XcodeKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -168,6 +182,7 @@
 				83B78BED253082D700D339A7 /* Frameworks */,
 				83B78BEE253082D700D339A7 /* Resources */,
 				83B78CDA25308E3500D339A7 /* Embed Frameworks */,
+				836093622804786D004ECC4F /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -220,7 +235,7 @@
 		83B78BE8253082D700D339A7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1200;
+				LastSwiftUpdateCheck = 1330;
 				LastUpgradeCheck = 1200;
 				TargetAttributes = {
 					83B78BEF253082D700D339A7 = {
