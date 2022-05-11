@@ -24,7 +24,7 @@ public struct GraphSymbolReporter: Reporter {
         var nodeMap = Dictionary<String, Node>()
         var usrToFileMap = Dictionary<String, String>()
         var implicitMap = Dictionary<String, Symbol>()
-        let edges = Set<Edge>()
+        var edges = Set<Edge>()
         var clusterIndex = 1
         var moduleIndex = 0
 
@@ -77,8 +77,7 @@ public struct GraphSymbolReporter: Reporter {
                 }
                 if selected.symbol.kind == .parameter ||
                     selected.symbol.kind == .extension ||
-                    selected.symbol.kind == .enumConstant
-                {
+                    selected.symbol.kind == .enumConstant {
                     continue
                 }
 
@@ -100,7 +99,8 @@ public struct GraphSymbolReporter: Reporter {
                     if selected.symbol.kind == .class || selected.symbol.kind == .enum || selected.symbol.kind == .struct {
                         var object : Subgraph? = objectMap[selected.symbol.usr]
                         if object == nil {
-                            object = Subgraph(id: "cluster_o\(clusterIndex)", label: selected.symbol.name)
+                            object = Subgraph(id: "cluster_o\(clusterIndex)",
+                                              label: "\(selected.symbol.kind) \(selected.symbol.name)")
                             clusterIndex += 1
                             object?.textColor = Color.named(.darkseagreen4)
                             object?.borderWidth = 1
@@ -132,7 +132,8 @@ public struct GraphSymbolReporter: Reporter {
                             (relation.symbol.kind == .class || relation.symbol.kind == .enum || relation.symbol.kind == .struct) {
                             var object : Subgraph? = objectMap[relation.symbol.usr]
                             if object == nil {
-                                object = Subgraph(id: "cluster_o\(clusterIndex)", label: relation.symbol.name)
+                                object = Subgraph(id: "cluster_o\(clusterIndex)",
+                                                  label: "\(relation.symbol.kind) \(relation.symbol.name)")
                                 clusterIndex += 1
                                 object?.textColor = Color.named(.darkseagreen4)
                                 object?.borderWidth = 1
@@ -303,6 +304,7 @@ public struct GraphSymbolReporter: Reporter {
                                 
                 var edge = Edge(from: other!, to: node!)
                 guard !edges.contains(edge) else { continue }
+                edges.insert(edge)
                 if selected.symbol.kind == .protocol {
                     edge.style = .dashed
                 }

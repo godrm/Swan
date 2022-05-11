@@ -75,7 +75,7 @@ class ViewController: NSViewController {
     
     private func report(for sources: [SymbolOccurrence], with options: CommandLineOptions) {
         do {
-            let configuration = try createConfiguration(options: options, outputFile: "swan.file.pdf")
+            let configuration = try createConfiguration(options: options)
             let outputs = configuration.reporter.report(configuration, occurrences: sources)
             if options.mode != .console {
                 preview(outputs)
