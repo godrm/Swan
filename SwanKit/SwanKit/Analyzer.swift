@@ -28,21 +28,7 @@ public final class Analyzer {
         sourceKitserver = SourceKitServer(workspace: workSpace)
         xcodeproj = try XcodeProj.init(pathString: configuration.projectFilePath.pathString)
     }
-    
-    public func analyze() throws -> [SourceDetail: [SymbolOccurrence]] {
-        let foundSource = ThreadSafe<[SourceDetail: [SymbolOccurrence]]>([:])
-        sourceCodeCollector.collect()
-
-        DispatchQueue.concurrentPerform(iterations: sourceCodeCollector.sources.count) { (index) in
-                let symbol = sourceCodeCollector.sources[index]
-                let occurs = analyze(source: symbol)
-                foundSource.atomically {
-                    $0[sourceCodeCollector.sources[index]] = occurs
-                }
-        }
-        return foundSource.value
-    }
-    
+        
     public func analyzeSymbols() throws -> [SymbolOccurrence] {
         let foundSource = ThreadSafe<Set<SymbolOccurrence>>([])
         sourceCodeCollector.collectSymbols(with: workSpace.index!, for: xcodeproj.pbxproj.buildFiles)
@@ -52,7 +38,9 @@ public final class Analyzer {
                 let occurs = analyze(symbol: symbol)
                 foundSource.atomically {
                     for occur in occurs {
-                        $0.insert(occur)
+                        if sourceCodeCollector.hasSource(filePath: occur.location.path) {
+                            $0.insert(occur)
+                        }
                     }
                 }
         }

@@ -11,7 +11,7 @@ import ArgumentParser
 import IndexStoreDB
 
 class Command: ParsableCommand {
-    @Option var project: String
+    @Option var project: String?
     @Option var workspace: String?
     @Option var scheme: String?
     
@@ -36,13 +36,13 @@ class Command: ParsableCommand {
             options.indexStorePath = target.path
             options.path = project_dir
             options.project_filepath = project_filepath
-            options.mode = .graphviz
+            options.mode = .console
             let sources = self.analyze(with: options)
             self.report(for: sources, with: options)
             lock.leave()
         }
         
-        let projectURL = URL(fileURLWithPath: project)
+        let projectURL = URL(fileURLWithPath: project ?? "")
         let workspaceURL = URL(fileURLWithPath: workspace ?? "")
 
         lock.enter()
@@ -50,7 +50,6 @@ class Command: ParsableCommand {
         if projectManager.isProject(for: projectURL) {
             projectManager.grepProjectSetting(for: projectURL, completeHandler: handler)
         }
-
         else if projectManager.isWorkspace(for: workspaceURL) {
             projectManager.grepWorkspaceSchemeSetting(for: workspaceURL, scheme: scheme ?? "", completeHandler: handler)
         }
@@ -71,6 +70,12 @@ class Command: ParsableCommand {
     }
 
     private func report(for sources: [SymbolOccurrence], with options: CommandLineOptions) {
+        do {
+            let configuration = try createConfiguration(options: options)
+            let _ = configuration.reporter.report(configuration, occurrences: sources)
+        } catch {
+            log(error.localizedDescription, level: .error)
+        }
     }
 }
 

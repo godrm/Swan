@@ -20,8 +20,10 @@ public struct GraphSymbolReporter: Reporter {
         var moduleMap = Dictionary<String, Subgraph>()
         var fileMap = Dictionary<String, Subgraph>()
         var objectMap = Dictionary<String, Subgraph>()
+        var nodeToObjectMap = Dictionary<Node, Subgraph>()
         var nodeMap = Dictionary<String, Node>()
         var usrToFileMap = Dictionary<String, String>()
+        var implicitMap = Dictionary<String, Symbol>()
         let edges = Set<Edge>()
         var clusterIndex = 1
         var moduleIndex = 0
@@ -59,6 +61,13 @@ public struct GraphSymbolReporter: Reporter {
             }
             
             if selected.roles.contains(.definition) || selected.relations.count == 0  {
+                if (selected.roles.contains(.implicit) && selected.roles.contains(.definition) &&
+                         selected.relations.count == 1 &&
+                         (selected.symbol.name.hasPrefix("getter:") ||
+                          selected.symbol.name.hasPrefix("setter:"))) {
+                    implicitMap[selected.symbol.usr] = selected.relations.first!.symbol
+                    continue
+                }
                 if selected.relations.count == 1 && (
                      selected.relations.first?.symbol.kind == .staticProperty ||
                      selected.relations.first?.symbol.kind == .parameter ||
@@ -68,13 +77,11 @@ public struct GraphSymbolReporter: Reporter {
                 }
                 if selected.symbol.kind == .parameter ||
                     selected.symbol.kind == .extension ||
-                    selected.symbol.kind == .enumConstant ||
-                     (selected.roles.contains(.implicit) &&
-                     (selected.symbol.name.hasPrefix("getter:") ||
-                      selected.symbol.name.hasPrefix("setter:"))) {
+                    selected.symbol.kind == .enumConstant
+                {
                     continue
                 }
-                
+
                 var label = "\(selected.symbol.name)"
                 if (selected.symbol.kind == .protocol) {
                     label = "<<\(selected.symbol.name)>>"
@@ -118,9 +125,35 @@ public struct GraphSymbolReporter: Reporter {
                         node?.shape = .box
                         node?.label = "." + label
                     }
-                    nodeMap[selected.symbol.usr] = node!
-                    file?.append(node!)
-                    usrToFileMap[selected.symbol.usr] = selected.location.path
+    
+                    var objectMapped = false
+                    for relation in selected.relations {
+                        if relation.roles.contains(.childOf) &&
+                            (relation.symbol.kind == .class || relation.symbol.kind == .enum || relation.symbol.kind == .struct) {
+                            var object : Subgraph? = objectMap[relation.symbol.usr]
+                            if object == nil {
+                                object = Subgraph(id: "cluster_o\(clusterIndex)", label: relation.symbol.name)
+                                clusterIndex += 1
+                                object?.textColor = Color.named(.darkseagreen4)
+                                object?.borderWidth = 1
+                                object?.borderColor = Color.named(.darkseagreen4)
+                                objectMap[relation.symbol.usr] = object
+                                file?.append(object!)
+                            }
+                            if nodeToObjectMap[node!] == nil {
+                                object?.append(node!)
+                                nodeToObjectMap[node!] = object
+                            }
+                            nodeMap[selected.symbol.usr] = node!
+                            objectMapped = true
+                            break
+                        }
+                    }
+                    if !objectMapped {
+                        nodeMap[selected.symbol.usr] = node!
+                        file?.append(node!)
+                        usrToFileMap[selected.symbol.usr] = selected.location.path
+                    }
                 }
             }
         }
@@ -142,15 +175,18 @@ public struct GraphSymbolReporter: Reporter {
             if selected.symbol.kind == .parameter ||
                 selected.symbol.kind == .enumConstant ||
                 selected.relations.count == 1 && selected.relations.first?.symbol.kind == .parameter ||
-                selected.relations.count == 1 && selected.relations.first?.symbol.kind == .staticProperty ||
-                (selected.roles.contains(.implicit) &&
-                 (selected.symbol.name.hasPrefix("getter:") || selected.symbol.name.hasPrefix("setter:"))) {
+                selected.relations.count == 1 && selected.relations.first?.symbol.kind == .staticProperty
+            {
                 continue
             }
 
-            var node = nodeMap[selected.symbol.usr]
+            var selectedUSR = selected.symbol.usr
+            var node = nodeMap[selectedUSR]
             if node == nil {
-                node = Node(selected.symbol.usr)
+                if let original = implicitMap[selected.symbol.usr] {
+                    selectedUSR = original.usr
+                }
+                node = Node(selectedUSR)
                 node?.label = label + ((selected.symbol.properties.contains(.ibAnnotated) || selected.symbol.properties.contains(.ibOutletCollection)) ? "@IB" : "")
                 if selected.symbol.kind == .class || selected.symbol.kind == .enum || selected.symbol.kind == .struct || selected.symbol.kind == .typealias {
                     node?.shape = .box
@@ -163,7 +199,7 @@ public struct GraphSymbolReporter: Reporter {
             }
 
             for relation in selected.relations {
-                let founded = nodeMap[selected.symbol.usr] != nil
+                let founded = nodeMap[selectedUSR] != nil
                 if relation.roles.contains(.childOf) &&
                     ( relation.symbol.kind == .struct ||
                       relation.symbol.kind == .class ||
@@ -177,14 +213,17 @@ public struct GraphSymbolReporter: Reporter {
                             object?.borderWidth = 1
                             object?.borderColor = Color.named(.darkseagreen4)
                             objectMap[relation.symbol.usr] = object
+                            file?.append(object!)
                         }
-                        object?.append(node!)
-                        file?.append(object!)
+                        if nodeToObjectMap[node!] == nil {
+                            object?.append(node!)
+                            nodeToObjectMap[node!] = object
+                        }
                     }
                     else {
                         file?.append(node!)
-                        nodeMap[selected.symbol.usr] = node!
-                        usrToFileMap[selected.symbol.usr] = selected.location.path
+                        nodeMap[selectedUSR] = node!
+                        usrToFileMap[selectedUSR] = selected.location.path
                     }
                     continue
                 }
@@ -195,9 +234,6 @@ public struct GraphSymbolReporter: Reporter {
                     continue
                 }
                 else if relation.roles.contains(.childOf) &&
-//                        (relation.symbol.kind == .classProperty ||
-//                         relation.symbol.kind == .staticProperty ||
-//                        relation.symbol.kind == .instanceProperty) &&
                         (selected.symbol.kind == .parameter ||
                          selected.symbol.kind == .instanceMethod ||
                          selected.symbol.kind == .function ||
@@ -205,26 +241,33 @@ public struct GraphSymbolReporter: Reporter {
                     continue
                 }
                                                 
-                if let object = objectMap[selected.symbol.usr], selected.roles.contains(.reference) {
+                if let object = objectMap[selectedUSR], nodeToObjectMap[node!] == nil &&  selected.roles.contains(.reference) {
                     object.append(node!)
-                    nodeMap[selected.symbol.usr] = node!
+                    nodeToObjectMap[node!] = object
+                    nodeMap[selectedUSR] = node!
                 }
                 else if let object = objectMap[relation.symbol.usr], relation.roles.contains(.receivedBy) {
-                    object.append(node!)
-                    nodeMap[selected.symbol.usr] = node!
+                    if nodeToObjectMap[node!] == nil {
+                        object.append(node!)
+                        nodeToObjectMap[node!] = object
+                        nodeMap[relation.symbol.usr] = node!
+                    }
+                    else {
+                        continue
+                    }
                 }
-                else if relation.roles.contains(.receivedBy) && nodeMap[selected.symbol.usr] == nil {
+                else if relation.roles.contains(.receivedBy) && nodeMap[selectedUSR] == nil {
                     guard let recvFilePath = usrToFileMap[relation.symbol.usr],
                           let recvFile = fileMap[recvFilePath] else { continue }
-                    nodeMap[selected.symbol.usr] = node!
-                    usrToFileMap[selected.symbol.usr] = recvFilePath
+                    nodeMap[selectedUSR] = node!
+                    usrToFileMap[selectedUSR] = recvFilePath
                     recvFile.append(node!)
                     continue
                 }
-                else if nodeMap[selected.symbol.usr] == nil {
+                else if nodeMap[selectedUSR] == nil {
                     file?.append(node!)
-                    nodeMap[selected.symbol.usr] = node!
-                    usrToFileMap[selected.symbol.usr] = selected.location.path
+                    nodeMap[selectedUSR] = node!
+                    usrToFileMap[selectedUSR] = selected.location.path
                 }
 
                 var symbolName = "\(relation.symbol.name)"
@@ -239,13 +282,23 @@ public struct GraphSymbolReporter: Reporter {
                     else if (relation.symbol.kind == .instanceMethod) {
                         symbolName = "-\(relation.symbol.name)"
                     }
-                    else if let object = objectMap[relation.symbol.usr] {
+                    else if let object = objectMap[relation.symbol.usr], nodeToObjectMap[node!] == nil {
                         object.append(node!)
+                        nodeToObjectMap[node!] = object
                         continue
                     }
                     other = Node(relation.symbol.usr)
                     other?.label = symbolName + (selected.symbol.properties.contains(.ibAnnotated) ? "@IB" : "")
+                    if relation.symbol.kind == .class || relation.symbol.kind == .enum ||
+                                relation.symbol.kind == .struct || relation.symbol.kind == .typealias {
+                        other?.shape = .box
+                        other?.textColor = Color.named(.darkviolet)
+                    }
                     nodeMap[relation.symbol.usr] = other
+                    if let object = objectMap[relation.symbol.usr], nodeToObjectMap[other!] == nil  {
+                        object.append(other!)
+                        nodeToObjectMap[other!] = object
+                    }
                 }
                                 
                 var edge = Edge(from: other!, to: node!)

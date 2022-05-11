@@ -26,8 +26,7 @@ extension Symbol : Hashable {
 class SourceCollector {
 
     let sourceExtensions = SafeSourceExtensions([:])
-    private(set) var sources: [SourceDetail] = []
-    private(set) var sourceSet: Set<SourceDetail> = []
+    private(set) var sources: [AbsolutePath] = []
     private(set) var symbols: [Symbol] = []
     private let configuration: Configuration
     private let targetPath: AbsolutePath
@@ -45,27 +44,6 @@ class SourceCollector {
         self.blacklistFiles = Set(configuration.blacklistFiles)
         self.fs = localFileSystem
     }
-
-    /// Populates the internal collections form the path source code
-    /// Currently only supports Swift
-    func collect() {
-        let files = computeContents()
-        let safeSources = ThreadSafe<[SourceDetail]>([])
-        DispatchQueue.concurrentPerform(iterations: files.count) { index in
-            guard let syntax = try? SyntaxParser.parse(files[index].asURL) else {
-                return
-            }
-            let context = CollectContext(configuration: configuration,
-                                         filePath: files[index].description,
-                                         sourceFileSyntax: syntax)
-            let pipeline = SwiftSourceCollectPipeline(context: context)
-            pipeline.walk(syntax)
-            safeSources.atomically { $0 += pipeline.sources }
-            sourceExtensions.atomically { $0 += pipeline.sourceExtensions }
-        }
-        sources = safeSources.value
-        sourceSet = Set<SourceDetail>(sources)
-    }
     
     func collectSymbols(with indexDB: IndexStoreDB) {
         let files = computeContents()
@@ -78,13 +56,22 @@ class SourceCollector {
     }
 
     func collectSymbols(with indexDB: IndexStoreDB, for buildFiles: [PBXBuildFile]) {
-        let files = computeContents(with: buildFiles)
+        sources = computeContents(with: buildFiles)
         let safeSources = ThreadSafe<Set<Symbol>>([])
-        DispatchQueue.concurrentPerform(iterations: files.count) { index in
-            let symbols = indexDB.symbols(inFilePath: files[index].pathString)
+        DispatchQueue.concurrentPerform(iterations: sources.count) { index in
+            let symbols = indexDB.symbols(inFilePath: sources[index].pathString)
             safeSources.atomically { symbolMap in symbols.forEach{ symbolMap.insert($0) } }
         }
         symbols = Array(safeSources.value)
+    }
+    
+    func hasSource(filePath: String) -> Bool {
+        for source in sources {
+            if source.pathString == filePath {
+                return true
+            }
+        }
+        return false
     }
 
     /// Compute the contents of the files in a target.

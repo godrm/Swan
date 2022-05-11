@@ -9,7 +9,7 @@ import SwanKit
 import IndexStoreDB
 
 class ViewController: NSViewController {
-    private var projectManager = ProjectManager()
+    private var projectManager : ProjectManager!
     static let PREVIEW = "Preview.app"
     static let OPEN = "file:///usr/bin/open"
 
@@ -29,7 +29,8 @@ class ViewController: NSViewController {
         
         NotificationCenter.default.addObserver(forName: ProjectDragView.NotificationName.didDropURL, object: nil, queue: nil) { (notification) in
             guard let url = notification.userInfo?["url"] as? URL else { return }
-            
+            self.projectManager = ProjectManager()
+
             if self.projectManager.isProject(for: url) {
                 self.projectManager.grepProjectSetting(for: url, completeHandler: handler)
             }
@@ -53,7 +54,7 @@ class ViewController: NSViewController {
                         
                         guard selected == .alertFirstButtonReturn,
                               let scheme = selectButton.selectedItem?.title else { return }
-                        self.projectManager.grepWorkspaceSchemeSetting(for: url, scheme: scheme, completeHandler: handler)
+                        ProjectManager().grepWorkspaceSchemeSetting(for: url, scheme: scheme, completeHandler: handler)
                     }
                 }
             }
