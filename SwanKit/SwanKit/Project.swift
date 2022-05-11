@@ -26,25 +26,25 @@ public final class ProjectManager {
         static let WORKSPACE = "-workspace"
         static let SCHEME = "-scheme"
     }
-    private var outputObserver : NSObjectProtocol? = nil
     private var readData = Data()
-    public init() {        
+    private var outputPipe : Pipe!
+    private var fileHandle : FileHandle!
+
+    public init() {
+        self.outputPipe = Pipe()
+        self.fileHandle = self.outputPipe.fileHandleForReading
+        self.fileHandle.readabilityHandler = { (fileHandle) -> Void in
+            self.readData.append(fileHandle.availableData)
+        }
     }
 
     private func runProcess(fileurl: String, arguments:[String], terminationHandler:  @escaping ()->()) {
         let aTask = Process()
+        aTask.qualityOfService = .userInitiated
         aTask.executableURL = URL(string: fileurl)
-        let outputPipe = Pipe()
         aTask.standardOutput = outputPipe
-        let fileHandle = outputPipe.fileHandleForReading
-        fileHandle.waitForDataInBackgroundAndNotify()
         readData.removeAll()
         
-        outputObserver = NotificationCenter.default.addObserver(forName: Notification.Name.NSFileHandleDataAvailable, object: fileHandle, queue: nil) { (notification) in
-                let pipeHandle = notification.object as! FileHandle
-                self.readData.append(pipeHandle.availableData)
-                pipeHandle.waitForDataInBackgroundAndNotify()
-        }
         aTask.terminationHandler = { (_) in
             terminationHandler()
         }
@@ -54,8 +54,6 @@ public final class ProjectManager {
     
     public func grepProjectSetting(for url:URL, completeHandler: @escaping (URL?, String, String) -> Void ) {
         runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.SHOW_SETTING, Self.Argument.PROJECT, url.path]) {
-            guard let observer = self.outputObserver else { return }
-            NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
             guard let settings = builds?.split(separator: "\n") else { return }
             var target_build_dir = ""
@@ -87,8 +85,6 @@ public final class ProjectManager {
     
     public func grepWorkspaceScheme(for url:URL, completeHandler: @escaping ([String]) -> Void ) {
         runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.LIST, Self.Argument.WORKSPACE, url.path]) {
-            guard let observer = self.outputObserver else { return }
-            NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
             guard let settings = builds?.split(separator: "\n") else { return }
             var hasSchemes = false
@@ -108,8 +104,6 @@ public final class ProjectManager {
     
     public func grepWorkspaceSchemeSetting(for url:URL, scheme: String, completeHandler: @escaping (URL?, String, String) -> Void ) {
         runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.SHOW_SETTING, Self.Argument.WORKSPACE, url.path, Self.Argument.SCHEME, scheme]) {
-            guard let observer = self.outputObserver else { return }
-            NotificationCenter.default.removeObserver(observer)
             let builds = String.init(data: self.readData, encoding: .utf8)
             guard let settings = builds?.split(separator: "\n") else { return }
             var target_build_dir = ""

@@ -36,6 +36,9 @@ class ViewController: NSViewController {
             else if self.projectManager.isWorkspace(for: url) {
                 self.projectManager.grepWorkspaceScheme(for: url) { (schemes) in
                     DispatchQueue.main.async {
+                        if schemes.count == 0 {                            
+                            return
+                        }
                         let selectButton = NSPopUpButton(title: "shemes", target: self, action: #selector(ViewController.selectScheme))
                         selectButton.title = schemes.first!
                         selectButton.frame = CGRect(x: 0, y: 0, width: 200, height: 50)

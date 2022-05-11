@@ -19,26 +19,34 @@ class Command: ParsableCommand {
     }
     
     func run() throws {
+        let lock = DispatchGroup.init()
+        
         print("""
             project = \(project) \
             scheme = \(scheme) for workspace = \(workspace)
             """)
         let projectManager = ProjectManager()
 
-        let handler : (URL?, String, String) -> Void = { [weak self] (targetURL, project, project_filepath) in
-            guard let self = self, let target = targetURL, project.count > 0 else { return }
+        let handler : (URL?, String, String) -> Void = { [weak self] (targetURL, project_dir, project_filepath) in
+            guard let self = self, let target = targetURL, project_dir.count > 0 else {
+                lock.leave()
+                return
+            }
             var options = CommandLineOptions()
             options.indexStorePath = target.path
-            options.path = project
+            options.path = project_dir
             options.project_filepath = project_filepath
             options.mode = .graphviz
             let sources = self.analyze(with: options)
             self.report(for: sources, with: options)
+            lock.leave()
         }
         
         let projectURL = URL(fileURLWithPath: project)
         let workspaceURL = URL(fileURLWithPath: workspace ?? "")
 
+        lock.enter()
+        
         if projectManager.isProject(for: projectURL) {
             projectManager.grepProjectSetting(for: projectURL, completeHandler: handler)
         }
@@ -46,6 +54,8 @@ class Command: ParsableCommand {
         else if projectManager.isWorkspace(for: workspaceURL) {
             projectManager.grepWorkspaceSchemeSetting(for: workspaceURL, scheme: scheme ?? "", completeHandler: handler)
         }
+        
+        lock.wait()
     }
     
     private func analyze(with options : CommandLineOptions) -> [SymbolOccurrence] {

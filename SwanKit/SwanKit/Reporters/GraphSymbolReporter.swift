@@ -23,7 +23,15 @@ public struct GraphSymbolReporter: Reporter {
         var usrToFileMap = Dictionary<String, String>()
         let edges = Set<Edge>()
         var clusterIndex = 1
-        var moduleIndex = 1
+        var moduleIndex = 0
+
+        let systemModule = Subgraph(id: "cluster_m\(moduleIndex)", label: "System")
+        moduleIndex += 1
+        systemModule.textColor = Color.named(.indianred4)
+        systemModule.borderWidth = 1
+        systemModule.borderColor = Color.named(.indianred4)
+        moduleMap["System"] = systemModule
+        graph.append(systemModule)
 
         for selected in occurrences {
             var module : Subgraph? = moduleMap[selected.location.moduleName]
@@ -59,8 +67,9 @@ public struct GraphSymbolReporter: Reporter {
                 }
                 if selected.symbol.kind == .parameter ||
                     selected.symbol.kind == .extension ||
-                    selected.symbol.kind == .enumConstant ||
-                    selected.roles.contains(.dynamic) {
+                    selected.symbol.kind == .enumConstant
+                    //|| selected.roles.contains(.dynamic)
+                    {
                     continue
                 }
                 
