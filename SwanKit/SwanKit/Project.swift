@@ -11,8 +11,6 @@ public final class ProjectManager {
     enum Constant {
         static let XCODEBUILD = "file:///usr/bin/xcodebuild"
         static let OPEN = "file:///usr/bin/open"
-        static let INDEX = "Index"
-        static let DATASTORE = "DataStore"
         static let TARGET_DIR = "TARGET_BUILD_DIR"
         static let PROJECT_DIR = "PROJECT_DIR"
         static let PROJECT_FILE_PATH = "PROJECT_FILE_PATH"
@@ -76,8 +74,6 @@ public final class ProjectManager {
                 targetURL?.deleteLastPathComponent()
                 targetURL?.deleteLastPathComponent()
                 targetURL?.deleteLastPathComponent()
-                targetURL?.appendPathComponent(Self.Constant.INDEX)
-                targetURL?.appendPathComponent(Self.Constant.DATASTORE)
             }
             completeHandler(targetURL, project_dir, project_file_path)
         }
@@ -126,8 +122,6 @@ public final class ProjectManager {
                 targetURL?.deleteLastPathComponent()
                 targetURL?.deleteLastPathComponent()
                 targetURL?.deleteLastPathComponent()
-                targetURL?.appendPathComponent(Self.Constant.INDEX)
-                targetURL?.appendPathComponent(Self.Constant.DATASTORE)
             }
             completeHandler(targetURL, project_dir, project_file_path)
         }

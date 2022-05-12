@@ -14,7 +14,7 @@ public struct CommandLineOptions {
     public var path: String = ""
 
     /// The xcodeproj file path
-    public var project_filepath: String = ""
+    public var projectFilePath: String = ""
 
     /// The mode to report
     ///
@@ -24,7 +24,7 @@ public struct CommandLineOptions {
     /// The path to the index that should be loaded
     ///
     /// If not specified, the default is find from DerivedData with project name
-    public var indexStorePath: String?
+    public var buildPath: String = ""
     
     public init() {
     }
@@ -32,23 +32,19 @@ public struct CommandLineOptions {
 
 public func createConfiguration(options: CommandLineOptions, outputFile: String = "swan.output.pdf") throws -> Configuration {
     let indexStorePath: AbsolutePath
-    if let indexStorePathString = options.indexStorePath {
-        indexStorePath = AbsolutePath(indexStorePathString)
-    } else {
-        let processInfo = ProcessInfo()
-        // ~/Library/Developer/Xcode/DerivedData/<target>/Index/DataStore
-        let buildRoot = try processInfo.environmentVariable(name: EnvironmentKeys.buildRoot)
-        let buildRootPath = AbsolutePath(buildRoot)
-        indexStorePath = buildRootPath.parentDirectory.parentDirectory.appending(component: "Index/DataStore")
-    }
+    let sourcePackagePath: AbsolutePath
+    let buildRootPath = AbsolutePath(options.buildPath)
+    indexStorePath = buildRootPath.appending(components: ["Index", "DataStore"])
+    sourcePackagePath = buildRootPath.appending(components: ["SourcePackages","checkouts"])
     
     guard let cwd = localFileSystem.currentWorkingDirectory else {
         throw PEError.fiendCurrentWorkingDirectoryFailed
     }
     let rootPath = AbsolutePath(options.path, relativeTo: cwd)
     let configuration = Configuration(projectPath: rootPath,
-                                      projectFilePath: AbsolutePath(options.project_filepath),
+                                      projectFilePath: AbsolutePath(options.projectFilePath),
                                       indexStorePath: indexStorePath.asURL.path,
+                                      sourcePackagePath: sourcePackagePath.asURL.path,
                                       reportType: options.mode,
                                       outputFile: outputFile)
     

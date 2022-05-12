@@ -33,9 +33,9 @@ class Command: ParsableCommand {
                 return
             }
             var options = CommandLineOptions()
-            options.indexStorePath = target.path
+            options.buildPath = target.path
             options.path = project_dir
-            options.project_filepath = project_filepath
+            options.projectFilePath = project_filepath
             options.mode = .console
             let sources = self.analyze(with: options)
             self.report(for: sources, with: options)

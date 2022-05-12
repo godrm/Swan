@@ -19,9 +19,9 @@ class ViewController: NSViewController {
         let handler : (URL?, String, String) -> Void = { (targetURL, project, project_filepath) in
             guard let target = targetURL, project.count > 0 else { return }
             var options = CommandLineOptions()
-            options.indexStorePath = target.path
+            options.buildPath = target.path
             options.path = project
-            options.project_filepath = project_filepath
+            options.projectFilePath = project_filepath
             options.mode = .graphviz
             let sources = self.analyze(with: options)
             self.report(for: sources, with: options)

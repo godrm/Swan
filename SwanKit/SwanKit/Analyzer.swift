@@ -31,8 +31,10 @@ public final class Analyzer {
         
     public func analyzeSymbols() throws -> [SymbolOccurrence] {
         let foundSource = ThreadSafe<Set<SymbolOccurrence>>([])
-        sourceCodeCollector.collectSymbols(with: workSpace.index!, for: xcodeproj.pbxproj.buildFiles)
-
+        var buildFiles = xcodeproj.pbxproj.buildFiles
+        
+        sourceCodeCollector.collectSymbols(with: workSpace.index!, for: buildFiles)
+        
         DispatchQueue.concurrentPerform(iterations: sourceCodeCollector.symbols.count) { (index) in
                 let symbol = sourceCodeCollector.symbols[index]
                 let occurs = analyze(symbol: symbol)

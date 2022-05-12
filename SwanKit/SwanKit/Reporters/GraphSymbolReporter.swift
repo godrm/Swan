@@ -10,6 +10,8 @@ import GraphViz
 import DOT
 
 public struct GraphSymbolReporter: Reporter {
+    static let FontName = "SF Mono"
+    
     private func filename(from path:String) -> String {
         let url = URL(fileURLWithPath: path)
         return url.lastPathComponent
@@ -45,6 +47,7 @@ public struct GraphSymbolReporter: Reporter {
                 module?.textColor = Color.named(.indianred4)
                 module?.borderWidth = 1
                 module?.borderColor = Color.named(.indianred4)
+                module?.fontName = Self.FontName
                 moduleMap[selected.location.moduleName] = module
                 graph.append(module!)
             }
@@ -57,6 +60,7 @@ public struct GraphSymbolReporter: Reporter {
                 file?.textColor = Color.named(.blue)
                 file?.borderWidth = 1
                 file?.borderColor = Color.named(.blue)
+                file?.fontName = Self.FontName
                 fileMap[selected.location.path] = file
                 module?.append(file!)
             }
@@ -108,6 +112,7 @@ public struct GraphSymbolReporter: Reporter {
                             object?.textColor = Color.named(.darkseagreen4)
                             object?.borderWidth = 1
                             object?.borderColor = Color.named(.darkseagreen4)
+                            object?.fontName = Self.FontName
                             objectMap[selected.symbol.usr] = object
                             file?.append(object!)
                         }
@@ -128,7 +133,8 @@ public struct GraphSymbolReporter: Reporter {
                         node?.shape = .box
                         node?.label = "." + label
                     }
-    
+                    node?.fontName = Self.FontName
+
                     var objectMapped = false
                     for relation in selected.relations {
                         if relation.roles.contains(.childOf) && relation.symbol.isKindOfObject() {
@@ -140,6 +146,7 @@ public struct GraphSymbolReporter: Reporter {
                                 object?.textColor = Color.named(.darkseagreen4)
                                 object?.borderWidth = 1
                                 object?.borderColor = Color.named(.darkseagreen4)
+                                object?.fontName = Self.FontName
                                 objectMap[relation.symbol.usr] = object
                                 file?.append(object!)
                             }
@@ -207,6 +214,7 @@ public struct GraphSymbolReporter: Reporter {
                     node?.shape = .box
                     node?.textColor = Color.named(.darkseagreen4)
                 }
+                node?.fontName = Self.FontName
             }
 
             for relation in selected.relations {
@@ -221,6 +229,7 @@ public struct GraphSymbolReporter: Reporter {
                             object?.textColor = Color.named(.darkseagreen4)
                             object?.borderWidth = 1
                             object?.borderColor = Color.named(.darkseagreen4)
+                            object?.fontName = Self.FontName
                             objectMap[relation.symbol.usr] = object
                             file?.append(object!)
                         }
@@ -309,6 +318,7 @@ public struct GraphSymbolReporter: Reporter {
                     }
                     other = Node(mappedSymbol.usr)
                     other?.label = symbolName + (selected.symbol.properties.contains(.ibAnnotated) ? "@IB" : "")
+                    other?.fontName = Self.FontName
                     if let object = objectMap[mappedSymbol.usr], nodeToObjectMap[other!] == nil  {
                         object.append(other!)
                         nodeToObjectMap[other!] = object
@@ -318,9 +328,6 @@ public struct GraphSymbolReporter: Reporter {
                     }
                     else if mappedSymbol.isKindOfObject() {
                         continue
-//                        other?.shape = .box
-//                        other?.textColor = Color.named(.darkviolet)
-//                        systemModule.append(other!)
                     }
                     nodeUSRMap[mappedSymbol.usr] = other
                 }
@@ -328,10 +335,12 @@ public struct GraphSymbolReporter: Reporter {
                 var edge = Edge(from: other!, to: node!)
                 guard !edges.contains(edge) else { continue }
                 edges.insert(edge)
+                edge.fontName = Self.FontName
                 if selected.symbol.kind == .protocol {
                     edge.style = .dashed
                 }
                 graph.append(edge)
+                graph.fontName = Self.FontName
             }
         }
         

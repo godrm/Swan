@@ -25,6 +25,7 @@ class SourceCollector {
     private(set) var symbols: [Symbol] = []
     private let configuration: Configuration
     private let targetPath: AbsolutePath
+    private let swiftPackagePath: AbsolutePath
     private let excluded: Set<AbsolutePath>
     private let included: Set<AbsolutePath>
     private let blacklistFiles: Set<String>
@@ -34,6 +35,7 @@ class SourceCollector {
     init(rootPath: AbsolutePath, configuration: Configuration) {
         self.targetPath = rootPath
         self.configuration = configuration
+        self.swiftPackagePath = AbsolutePath(configuration.sourcePackagePath)
         self.excluded = Set(configuration.excluded)
         self.included = Set(configuration.included)
         self.blacklistFiles = Set(configuration.blacklistFiles)
@@ -109,7 +111,16 @@ class SourceCollector {
 
         for buildFile in buildFiles {
             guard let sourcefile = buildFile.file else {
-//                print(buildFile.product?.productName)
+//FIXME: Support to scan for SwiftPackage Files
+//                guard let package = buildFile.product?.package else { continue }
+//                let packagePath = "\(swiftPackagePath.pathString)/\(package.name!)"
+//                guard FileManager.default.fileExists(atPath: packagePath) else { continue }
+//                let directories = FileManager.default.enumerator(atPath: packagePath)
+//                while let file = directories?.nextObject() as? String {
+//                    if file.hasSuffix(".swift") {
+//                        contents.append(AbsolutePath("\(packagePath)/\(file)"))
+//                    }
+//                }
                 continue
             }
             let parentPath = sourcefile.parentPath() ?? ""
