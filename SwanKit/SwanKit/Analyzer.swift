@@ -18,23 +18,21 @@ public final class Analyzer {
     private let xcodeproj : XcodeProj
     
     public init(configuration: Configuration) throws {
+        xcodeproj = try XcodeProj.init(pathString: configuration.projectFilePath.pathString)
         sourceCodeCollector = SourceCollector(rootPath: configuration.projectPath,
-                                              configuration: configuration)
+                                              configuration: configuration,
+                                              xcodeproj: xcodeproj)
         self.configuration = configuration
         let buildSystem = DatabaseBuildSystem(indexStorePath: configuration.indexStorePath,
                                               indexDatabasePath: configuration.indexDatabasePath)
         workSpace = try Workspace(buildSettings: buildSystem)
         workSpace.index?.pollForUnitChangesAndWait()
         sourceKitserver = SourceKitServer(workspace: workSpace)
-        xcodeproj = try XcodeProj.init(pathString: configuration.projectFilePath.pathString)
     }
         
     public func analyzeSymbols() throws -> [SymbolOccurrence] {
         let foundSource = ThreadSafe<Set<SymbolOccurrence>>([])
-        var buildFiles = xcodeproj.pbxproj.buildFiles
-        
-        sourceCodeCollector.collectSymbols(with: workSpace.index!, for: buildFiles)
-        
+        sourceCodeCollector.collectSymbolsProject(with: workSpace.index!)
         DispatchQueue.concurrentPerform(iterations: sourceCodeCollector.symbols.count) { (index) in
                 let symbol = sourceCodeCollector.symbols[index]
                 let occurs = analyze(symbol: symbol)
