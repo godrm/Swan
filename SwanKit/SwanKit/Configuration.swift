@@ -24,6 +24,9 @@ public struct Configuration {
     /// The xcodeproj path
     public let projectFilePath: AbsolutePath
 
+    /// The workspacedata path
+    public let workspaceFilePath: AbsolutePath?
+
     /// The sourcePackage path
     public let sourcePackagePath: String
 
@@ -44,6 +47,7 @@ public struct Configuration {
                   blacklistSymbols: [String],
                   outputFile: AbsolutePath,
                   projectFilePath: AbsolutePath,
+                  workspaceFilePath: AbsolutePath?,
                   sourcePackagePath: String) {
         self.projectPath = projectPath
         self.indexStorePath = indexStorePath
@@ -56,10 +60,11 @@ public struct Configuration {
         self.blacklistSymbols = blacklistSymbols
         self.outputFile = outputFile
         self.projectFilePath = projectFilePath
+        self.workspaceFilePath = workspaceFilePath
         self.sourcePackagePath = sourcePackagePath
     }
     
-    public init(projectPath: AbsolutePath, projectFilePath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil, sourcePackagePath: String = "", reportType: ReporterType = .console, outputFile: String = "swan.output.pdf") {
+    public init(projectPath: AbsolutePath, projectFilePath: AbsolutePath, workspaceFilePath: AbsolutePath? = nil, indexStorePath: String = "", indexDatabasePath: String? = nil, sourcePackagePath: String = "", reportType: ReporterType = .console, outputFile: String = "swan.output.pdf") {
         let reporter = ReporterFactory.make(reportType)
 //        let rules = RuleFactory.make()
         let outputFilePath = AbsolutePath(projectPath.asURL.path).appending(component: outputFile)
@@ -74,6 +79,7 @@ public struct Configuration {
                   blacklistSymbols: [],
                   outputFile: outputFilePath,
                   projectFilePath: projectFilePath,
+                  workspaceFilePath: workspaceFilePath,
                   sourcePackagePath: sourcePackagePath)
     }
 }

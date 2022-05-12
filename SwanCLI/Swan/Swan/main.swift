@@ -27,7 +27,7 @@ class Command: ParsableCommand {
             """)
         let projectManager = ProjectManager()
 
-        let handler : (URL?, String, String) -> Void = { [weak self] (targetURL, project_dir, project_filepath) in
+        let handler : (URL?, String, String) -> Void = { [weak self] (targetURL, project_dir, project_filepath, workspace_filepath) in
             guard let self = self, let target = targetURL, project_dir.count > 0 else {
                 lock.leave()
                 return
@@ -36,6 +36,7 @@ class Command: ParsableCommand {
             options.buildPath = target.path
             options.path = project_dir
             options.projectFilePath = project_filepath
+            options.workspaceFilePath = workspace_filepath ?? ""
             options.mode = .console
             let sources = self.analyze(with: options)
             self.report(for: sources, with: options)

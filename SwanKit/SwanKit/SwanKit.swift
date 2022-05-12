@@ -16,6 +16,9 @@ public struct CommandLineOptions {
     /// The xcodeproj file path
     public var projectFilePath: String = ""
 
+    /// The xcworkspace file path
+    public var workspaceFilePath: String = ""
+
     /// The mode to report
     ///
     /// If not specified, default mode is console
@@ -43,37 +46,12 @@ public func createConfiguration(options: CommandLineOptions, outputFile: String 
     let rootPath = AbsolutePath(options.path, relativeTo: cwd)
     let configuration = Configuration(projectPath: rootPath,
                                       projectFilePath: AbsolutePath(options.projectFilePath),
+                                      workspaceFilePath: (options.workspaceFilePath.count>0) ? AbsolutePath(options.workspaceFilePath) : nil,
                                       indexStorePath: indexStorePath.asURL.path,
                                       sourcePackagePath: sourcePackagePath.asURL.path,
                                       reportType: options.mode,
                                       outputFile: outputFile)
-    
     return configuration
-}
-
-private extension ProcessInfo {
-    func environmentVariable(name: String) throws -> String {
-    guard let value = self.environment[name] else {
-        throw ProcessError.missingValue(argument: name)
-    }
-    return value
-  }
-}
-
-// Default values for non-optional Commander Options
-struct EnvironmentKeys {
-    static let bundleIdentifier = "PRODUCT_BUNDLE_IDENTIFIER"
-    static let productModuleName = "PRODUCT_MODULE_NAME"
-    static let scriptInputFileCount = "SCRIPT_INPUT_FILE_COUNT"
-    static let scriptOutputFileCount = "SCRIPT_OUTPUT_FILE_COUNT"
-    static let target = "TARGET_NAME"
-    static let tempDir = "TEMP_DIR"
-    static let xcodeproj = "PROJECT_FILE_PATH"
-    static let buildRoot = "BUILD_ROOT"
-}
-
-enum ProcessError: Error {
-    case missingValue(argument: String?)
 }
 
 enum PEError: Error {

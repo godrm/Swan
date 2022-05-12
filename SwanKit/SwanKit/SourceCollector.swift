@@ -32,8 +32,9 @@ class SourceCollector {
     /// The file system to operate on.
     private let fs: FileSystem
     private let xcodeproj: XcodeProj
+    private var xcworkspace: XCWorkspace? = nil
     
-    init(rootPath: AbsolutePath, configuration: Configuration, xcodeproj: XcodeProj) {
+    init(rootPath: AbsolutePath, configuration: Configuration, xcodeproj: XcodeProj, xcworkspace: XCWorkspace? = nil) {
         self.targetPath = rootPath
         self.configuration = configuration
         self.swiftPackagePath = AbsolutePath(configuration.sourcePackagePath)
@@ -42,6 +43,7 @@ class SourceCollector {
         self.blocklistFiles = Set(configuration.blacklistFiles)
         self.fs = localFileSystem
         self.xcodeproj = xcodeproj
+        self.xcworkspace = xcworkspace
     }
     
     func collectSymbolsAtTarget(with indexDB: IndexStoreDB) {
@@ -56,6 +58,12 @@ class SourceCollector {
 
     func collectSymbolsProject(with indexDB: IndexStoreDB) {
         sources = computeContents(with: xcodeproj.pbxproj.buildFiles, projectPath: targetPath.pathString)
+        if let xcworkspace = xcworkspace {
+            let projectName = "\(xcodeproj.pbxproj.rootObject?.name ?? "").xcodeproj"
+            for project in xcworkspace.data.children where project.location.path != projectName {
+                sources.append(contentsOf: computeProjectContents(in: project.location.path))
+            }
+        }
         sources.append(contentsOf: computeFrameworkContents(in: xcodeproj.pbxproj.fileReferences))
         let safeSources = ThreadSafe<Set<Symbol>>([])
         DispatchQueue.concurrentPerform(iterations: sources.count) { index in
@@ -169,6 +177,19 @@ class SourceCollector {
         
         return contents
     }
+    
+    /// Compute project file references
+    private func computeProjectContents(in xcodeproject: String) -> [AbsolutePath] {
+        var contents: [AbsolutePath] = []
+
+        let projectPath = "\(targetPath.pathString)/\(xcodeproject)"
+        guard let framework = try? XcodeProj(pathString: projectPath) else { return[] }
+        let projectURL = URL(fileURLWithPath: projectPath)
+        contents.append(contentsOf: computeContents(with: framework.pbxproj.buildFiles, projectPath: projectURL.deletingLastPathComponent().path))
+        
+        return contents
+    }
+
 }
 
 extension PBXFileElement {

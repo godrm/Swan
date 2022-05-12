@@ -16,12 +16,17 @@ public final class Analyzer {
     private let workSpace: Workspace
     private let configuration: Configuration
     private let xcodeproj : XcodeProj
+    private var xcworkspace : XCWorkspace? = nil
     
     public init(configuration: Configuration) throws {
         xcodeproj = try XcodeProj.init(pathString: configuration.projectFilePath.pathString)
+        if let workspacePath = configuration.workspaceFilePath?.pathString {
+            xcworkspace = try? XCWorkspace.init(pathString: workspacePath)
+        }
         sourceCodeCollector = SourceCollector(rootPath: configuration.projectPath,
                                               configuration: configuration,
-                                              xcodeproj: xcodeproj)
+                                              xcodeproj: xcodeproj,
+                                              xcworkspace: xcworkspace)
         self.configuration = configuration
         let buildSystem = DatabaseBuildSystem(indexStorePath: configuration.indexStorePath,
                                               indexDatabasePath: configuration.indexDatabasePath)
@@ -46,9 +51,7 @@ public final class Analyzer {
         }
         return Array(foundSource.value)
     }
-}
 
-extension Analyzer {
     private func analyze(symbol: Symbol) -> [SymbolOccurrence] {
         let symbolOccurrenceResults = sourceKitserver.occurrences(
             ofUSR: symbol.usr,

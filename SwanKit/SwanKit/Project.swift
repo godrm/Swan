@@ -50,7 +50,7 @@ public final class ProjectManager {
         try? aTask.run()
     }
     
-    public func grepProjectSetting(for url:URL, completeHandler: @escaping (URL?, String, String) -> Void ) {
+    public func grepProjectSetting(for url:URL, completeHandler: @escaping (URL?, String, String, String?) -> Void ) {
         runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.SHOW_SETTING, Self.Argument.PROJECT, url.path]) {
             let builds = String.init(data: self.readData, encoding: .utf8)
             guard let settings = builds?.split(separator: "\n") else { return }
@@ -75,7 +75,7 @@ public final class ProjectManager {
                 targetURL?.deleteLastPathComponent()
                 targetURL?.deleteLastPathComponent()
             }
-            completeHandler(targetURL, project_dir, project_file_path)
+            completeHandler(targetURL, project_dir, project_file_path, nil)
         }
     }
     
@@ -98,7 +98,7 @@ public final class ProjectManager {
         }
     }
     
-    public func grepWorkspaceSchemeSetting(for url:URL, scheme: String, completeHandler: @escaping (URL?, String, String) -> Void ) {
+    public func grepWorkspaceSchemeSetting(for url:URL, scheme: String, completeHandler: @escaping (URL?, String, String, String?) -> Void ) {
         runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.SHOW_SETTING, Self.Argument.WORKSPACE, url.path, Self.Argument.SCHEME, scheme]) {
             let builds = String.init(data: self.readData, encoding: .utf8)
             guard let settings = builds?.split(separator: "\n") else { return }
@@ -123,7 +123,7 @@ public final class ProjectManager {
                 targetURL?.deleteLastPathComponent()
                 targetURL?.deleteLastPathComponent()
             }
-            completeHandler(targetURL, project_dir, project_file_path)
+            completeHandler(targetURL, project_dir, project_file_path, url.path)
         }
     }
 

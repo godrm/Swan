@@ -16,12 +16,13 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let handler : (URL?, String, String) -> Void = { (targetURL, project, project_filepath) in
+        let handler : (URL?, String, String, String?) -> Void = { (targetURL, project, project_filepath, workspace_filepath) in
             guard let target = targetURL, project.count > 0 else { return }
             var options = CommandLineOptions()
             options.buildPath = target.path
             options.path = project
             options.projectFilePath = project_filepath
+            options.workspaceFilePath = workspace_filepath ?? ""
             options.mode = .graphviz
             let sources = self.analyze(with: options)
             self.report(for: sources, with: options)
