@@ -37,6 +37,7 @@
 		83B78CD125308B2400D339A7 /* Reporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CCA25308B1600D339A7 /* Reporter.swift */; };
 		83B78CE2253178DD00D339A7 /* SwanKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CE1253178DD00D339A7 /* SwanKit.swift */; };
 		83D4345727F1BB5E001CEB84 /* XcodeProj in Frameworks */ = {isa = PBXBuildFile; productRef = 83D4345627F1BB5E001CEB84 /* XcodeProj */; };
+		83E520FE282CBB0F003B0AC5 /* Symbol+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E520FD282CBB0F003B0AC5 /* Symbol+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +93,7 @@
 		83B78CC925308B1600D339A7 /* ConsoleReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleReporter.swift; sourceTree = "<group>"; };
 		83B78CCA25308B1600D339A7 /* Reporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reporter.swift; sourceTree = "<group>"; };
 		83B78CE1253178DD00D339A7 /* SwanKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwanKit.swift; sourceTree = "<group>"; };
+		83E520FD282CBB0F003B0AC5 /* Symbol+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Symbol+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,6 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				83B78C992530890200D339A7 /* SymbolOccurrence+Extension.swift */,
+				83E520FD282CBB0F003B0AC5 /* Symbol+Extension.swift */,
 				83B78C9A2530890200D339A7 /* Dictionary+Extension.swift */,
 			);
 			path = Extensions;
@@ -358,6 +361,7 @@
 				83B78C77253086E900D339A7 /* SourceKitServer.swift in Sources */,
 				830D0D4D282B655500343F95 /* Project.swift in Sources */,
 				83B78CCB25308B1D00D339A7 /* ReporterFactory.swift in Sources */,
+				83E520FE282CBB0F003B0AC5 /* Symbol+Extension.swift in Sources */,
 				83B78C74253086D900D339A7 /* Workspace.swift in Sources */,
 				83B78C71253086B900D339A7 /* SourceCollector.swift in Sources */,
 				83B78C8C2530886100D339A7 /* RuleType.swift in Sources */,
