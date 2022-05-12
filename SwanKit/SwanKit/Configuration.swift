@@ -4,7 +4,7 @@ import TSCBasic
 /// Holds the complete set of configured values and defaults.
 public struct Configuration {
         
-    public let rules: [Rule]
+//    public let rules: [Rule]
     
     public let reporter: Reporter
     
@@ -33,7 +33,7 @@ public struct Configuration {
     internal init(projectPath: AbsolutePath,
                   indexStorePath: String,
                   indexDatabasePath: String? = nil,
-                  rules: [Rule],
+//                  rules: [Rule],
                   reporter: Reporter,
                   included: [AbsolutePath],
                   excluded: [AbsolutePath],
@@ -44,7 +44,7 @@ public struct Configuration {
         self.projectPath = projectPath
         self.indexStorePath = indexStorePath
         self.indexDatabasePath = indexDatabasePath ?? NSTemporaryDirectory() + "index_\(getpid())"
-        self.rules = rules
+//        self.rules = rules
         self.reporter = reporter
         self.included = included
         self.excluded = excluded
@@ -56,12 +56,12 @@ public struct Configuration {
     
     public init(projectPath: AbsolutePath, projectFilePath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil, reportType: ReporterType = .console, outputFile: String = "swan.output.pdf") {
         let reporter = ReporterFactory.make(reportType)
-        let rules = RuleFactory.make()
+//        let rules = RuleFactory.make()
         let outputFilePath = AbsolutePath(projectPath.asURL.path).appending(component: outputFile)
         self.init(projectPath: projectPath,
                   indexStorePath: indexStorePath,
                   indexDatabasePath: indexDatabasePath,
-                  rules: rules,
+//                  rules: rules,
                   reporter: reporter,
                   included: ([""]).map{ projectPath.appending(component: $0)},
                   excluded: (["Pods"]).map{ projectPath.appending(component: $0)} ,

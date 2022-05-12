@@ -10,13 +10,10 @@
 		830D0D4D282B655500343F95 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830D0D4C282B655500343F95 /* Project.swift */; };
 		832582CD27F2085C005417C7 /* GraphViz in Frameworks */ = {isa = PBXBuildFile; productRef = 832582CC27F2085C005417C7 /* GraphViz */; };
 		832E9DF827EA220A00EB6CC7 /* GraphFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832E9DF727EA220A00EB6CC7 /* GraphFile.swift */; };
-		83607CB827E822A90009532A /* SwiftSyntaxParser in Frameworks */ = {isa = PBXBuildFile; productRef = 83607CB727E822A90009532A /* SwiftSyntaxParser */; };
 		83607CBA27E9D1B60009532A /* GraphSymbolReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83607CB927E9D1B60009532A /* GraphSymbolReporter.swift */; };
 		83B78C392530832F00D339A7 /* SwanKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83B78C2F2530832F00D339A7 /* SwanKit.framework */; };
 		83B78C3E2530832F00D339A7 /* SwanKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C3D2530832F00D339A7 /* SwanKitTests.swift */; };
 		83B78C402530832F00D339A7 /* SwanKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 83B78C322530832F00D339A7 /* SwanKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		83B78C4D253083E000D339A7 /* SwiftSyntax in Frameworks */ = {isa = PBXBuildFile; productRef = 83B78C4C253083E000D339A7 /* SwiftSyntax */; };
-		83B78C4F253083E000D339A7 /* SwiftSyntaxBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = 83B78C4E253083E000D339A7 /* SwiftSyntaxBuilder */; };
 		83B78C5E2530849200D339A7 /* IndexStoreDB in Frameworks */ = {isa = PBXBuildFile; productRef = 83B78C5D2530849200D339A7 /* IndexStoreDB */; };
 		83B78C632530851500D339A7 /* SwiftToolsSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 83B78C622530851500D339A7 /* SwiftToolsSupport */; };
 		83B78C642530851500D339A7 /* SwiftToolsSupport in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 83B78C622530851500D339A7 /* SwiftToolsSupport */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -26,30 +23,14 @@
 		83B78C77253086E900D339A7 /* SourceKitServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C76253086E900D339A7 /* SourceKitServer.swift */; };
 		83B78C7A253086FD00D339A7 /* DatabaseBuildSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C79253086FD00D339A7 /* DatabaseBuildSystem.swift */; };
 		83B78C7D253087C000D339A7 /* ThreadSafe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C7C253087C000D339A7 /* ThreadSafe.swift */; };
-		83B78C802530880300D339A7 /* SourceLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C7F2530880300D339A7 /* SourceLocation.swift */; };
-		83B78C832530882A00D339A7 /* SourceDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C822530882A00D339A7 /* SourceDetail.swift */; };
-		83B78C862530883B00D339A7 /* Function.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C852530883B00D339A7 /* Function.swift */; };
 		83B78C892530884E00D339A7 /* ReporterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C882530884D00D339A7 /* ReporterType.swift */; };
 		83B78C8C2530886100D339A7 /* RuleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C8B2530886100D339A7 /* RuleType.swift */; };
 		83B78C8F2530888500D339A7 /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C8E2530888500D339A7 /* Validation.swift */; };
 		83B78C922530889300D339A7 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C912530889300D339A7 /* Regex.swift */; };
 		83B78CA02530898200D339A7 /* SymbolOccurrence+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C992530890200D339A7 /* SymbolOccurrence+Extension.swift */; };
 		83B78CA12530898200D339A7 /* Dictionary+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C9A2530890200D339A7 /* Dictionary+Extension.swift */; };
-		83B78CA22530898200D339A7 /* SwiftSyntax+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C9B2530890200D339A7 /* SwiftSyntax+Extension.swift */; };
-		83B78CA32530898200D339A7 /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C9C2530890200D339A7 /* Array+Extension.swift */; };
 		83B78CA42530898200D339A7 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C95253088F400D339A7 /* Logging.swift */; };
 		83B78CA52530898200D339A7 /* LogLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78C96253088F400D339A7 /* LogLevel.swift */; };
-		83B78CA82530899E00D339A7 /* SwiftSourceCollectPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CA72530899D00D339A7 /* SwiftSourceCollectPipeline.swift */; };
-		83B78CB5253089E100D339A7 /* SuperClassRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CAB253089D500D339A7 /* SuperClassRule.swift */; };
-		83B78CB6253089E100D339A7 /* SkipOptionalFunctionRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CAC253089D500D339A7 /* SkipOptionalFunctionRule.swift */; };
-		83B78CB7253089E100D339A7 /* RuleFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CAD253089D500D339A7 /* RuleFactory.swift */; };
-		83B78CB8253089E100D339A7 /* BlacklistSources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CAE253089D500D339A7 /* BlacklistSources.swift */; };
-		83B78CB9253089E100D339A7 /* CommentRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CAF253089D500D339A7 /* CommentRule.swift */; };
-		83B78CBA253089E100D339A7 /* XCTestRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CB0253089D500D339A7 /* XCTestRule.swift */; };
-		83B78CBC253089E100D339A7 /* Rule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CB2253089D500D339A7 /* Rule.swift */; };
-		83B78CBD253089E100D339A7 /* SkipPublicRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CB3253089D500D339A7 /* SkipPublicRule.swift */; };
-		83B78CBE253089E100D339A7 /* AttributesRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CB4253089D500D339A7 /* AttributesRule.swift */; };
-		83B78CC125308A5300D339A7 /* CollectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CC025308A5300D339A7 /* CollectContext.swift */; };
 		83B78CC425308A7500D339A7 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CC325308A7500D339A7 /* Configuration.swift */; };
 		83B78CCB25308B1D00D339A7 /* ReporterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CC725308B1600D339A7 /* ReporterFactory.swift */; };
 		83B78CCF25308B2200D339A7 /* ConsoleReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B78CC925308B1600D339A7 /* ConsoleReporter.swift */; };
@@ -98,9 +79,6 @@
 		83B78C76253086E900D339A7 /* SourceKitServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceKitServer.swift; sourceTree = "<group>"; };
 		83B78C79253086FD00D339A7 /* DatabaseBuildSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseBuildSystem.swift; sourceTree = "<group>"; };
 		83B78C7C253087C000D339A7 /* ThreadSafe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafe.swift; sourceTree = "<group>"; };
-		83B78C7F2530880300D339A7 /* SourceLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceLocation.swift; sourceTree = "<group>"; };
-		83B78C822530882A00D339A7 /* SourceDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceDetail.swift; sourceTree = "<group>"; };
-		83B78C852530883B00D339A7 /* Function.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Function.swift; sourceTree = "<group>"; };
 		83B78C882530884D00D339A7 /* ReporterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReporterType.swift; sourceTree = "<group>"; };
 		83B78C8B2530886100D339A7 /* RuleType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleType.swift; sourceTree = "<group>"; };
 		83B78C8E2530888500D339A7 /* Validation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
@@ -109,19 +87,6 @@
 		83B78C96253088F400D339A7 /* LogLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogLevel.swift; sourceTree = "<group>"; };
 		83B78C992530890200D339A7 /* SymbolOccurrence+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SymbolOccurrence+Extension.swift"; sourceTree = "<group>"; };
 		83B78C9A2530890200D339A7 /* Dictionary+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extension.swift"; sourceTree = "<group>"; };
-		83B78C9B2530890200D339A7 /* SwiftSyntax+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftSyntax+Extension.swift"; sourceTree = "<group>"; };
-		83B78C9C2530890200D339A7 /* Array+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extension.swift"; sourceTree = "<group>"; };
-		83B78CA72530899D00D339A7 /* SwiftSourceCollectPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftSourceCollectPipeline.swift; sourceTree = "<group>"; };
-		83B78CAB253089D500D339A7 /* SuperClassRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperClassRule.swift; sourceTree = "<group>"; };
-		83B78CAC253089D500D339A7 /* SkipOptionalFunctionRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipOptionalFunctionRule.swift; sourceTree = "<group>"; };
-		83B78CAD253089D500D339A7 /* RuleFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleFactory.swift; sourceTree = "<group>"; };
-		83B78CAE253089D500D339A7 /* BlacklistSources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlacklistSources.swift; sourceTree = "<group>"; };
-		83B78CAF253089D500D339A7 /* CommentRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentRule.swift; sourceTree = "<group>"; };
-		83B78CB0253089D500D339A7 /* XCTestRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestRule.swift; sourceTree = "<group>"; };
-		83B78CB2253089D500D339A7 /* Rule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rule.swift; sourceTree = "<group>"; };
-		83B78CB3253089D500D339A7 /* SkipPublicRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipPublicRule.swift; sourceTree = "<group>"; };
-		83B78CB4253089D500D339A7 /* AttributesRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributesRule.swift; sourceTree = "<group>"; };
-		83B78CC025308A5300D339A7 /* CollectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectContext.swift; sourceTree = "<group>"; };
 		83B78CC325308A7500D339A7 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		83B78CC725308B1600D339A7 /* ReporterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReporterFactory.swift; sourceTree = "<group>"; };
 		83B78CC925308B1600D339A7 /* ConsoleReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleReporter.swift; sourceTree = "<group>"; };
@@ -134,11 +99,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83B78C4D253083E000D339A7 /* SwiftSyntax in Frameworks */,
 				83B78C5E2530849200D339A7 /* IndexStoreDB in Frameworks */,
 				832582CD27F2085C005417C7 /* GraphViz in Frameworks */,
-				83B78C4F253083E000D339A7 /* SwiftSyntaxBuilder in Frameworks */,
-				83607CB827E822A90009532A /* SwiftSyntaxParser in Frameworks */,
 				83B78C632530851500D339A7 /* SwiftToolsSupport in Frameworks */,
 				83D4345727F1BB5E001CEB84 /* XcodeProj in Frameworks */,
 			);
@@ -187,7 +149,6 @@
 				83B78C982530890200D339A7 /* Extensions */,
 				83B78C94253088F400D339A7 /* Logging */,
 				83B78CD425308C0100D339A7 /* Models */,
-				83B78CAA253089D500D339A7 /* Rules */,
 				83B78CC625308B1600D339A7 /* Reporters */,
 				83B78C9E2530891C00D339A7 /* Utilities */,
 				83B78C322530832F00D339A7 /* SwanKit.h */,
@@ -199,8 +160,6 @@
 				83B78C73253086D900D339A7 /* Workspace.swift */,
 				83B78C76253086E900D339A7 /* SourceKitServer.swift */,
 				83B78C70253086B900D339A7 /* SourceCollector.swift */,
-				83B78CC025308A5300D339A7 /* CollectContext.swift */,
-				83B78CA72530899D00D339A7 /* SwiftSourceCollectPipeline.swift */,
 				83B78C79253086FD00D339A7 /* DatabaseBuildSystem.swift */,
 			);
 			path = SwanKit;
@@ -229,8 +188,6 @@
 			children = (
 				83B78C992530890200D339A7 /* SymbolOccurrence+Extension.swift */,
 				83B78C9A2530890200D339A7 /* Dictionary+Extension.swift */,
-				83B78C9B2530890200D339A7 /* SwiftSyntax+Extension.swift */,
-				83B78C9C2530890200D339A7 /* Array+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -243,22 +200,6 @@
 				83B78C8E2530888500D339A7 /* Validation.swift */,
 			);
 			path = Utilities;
-			sourceTree = "<group>";
-		};
-		83B78CAA253089D500D339A7 /* Rules */ = {
-			isa = PBXGroup;
-			children = (
-				83B78CAB253089D500D339A7 /* SuperClassRule.swift */,
-				83B78CAC253089D500D339A7 /* SkipOptionalFunctionRule.swift */,
-				83B78CAD253089D500D339A7 /* RuleFactory.swift */,
-				83B78CAE253089D500D339A7 /* BlacklistSources.swift */,
-				83B78CAF253089D500D339A7 /* CommentRule.swift */,
-				83B78CB0253089D500D339A7 /* XCTestRule.swift */,
-				83B78CB2253089D500D339A7 /* Rule.swift */,
-				83B78CB3253089D500D339A7 /* SkipPublicRule.swift */,
-				83B78CB4253089D500D339A7 /* AttributesRule.swift */,
-			);
-			path = Rules;
 			sourceTree = "<group>";
 		};
 		83B78CC625308B1600D339A7 /* Reporters */ = {
@@ -276,11 +217,8 @@
 		83B78CD425308C0100D339A7 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				83B78C852530883B00D339A7 /* Function.swift */,
 				83B78C882530884D00D339A7 /* ReporterType.swift */,
 				83B78C8B2530886100D339A7 /* RuleType.swift */,
-				83B78C822530882A00D339A7 /* SourceDetail.swift */,
-				83B78C7F2530880300D339A7 /* SourceLocation.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -315,11 +253,8 @@
 			);
 			name = SwanKit;
 			packageProductDependencies = (
-				83B78C4C253083E000D339A7 /* SwiftSyntax */,
-				83B78C4E253083E000D339A7 /* SwiftSyntaxBuilder */,
 				83B78C5D2530849200D339A7 /* IndexStoreDB */,
 				83B78C622530851500D339A7 /* SwiftToolsSupport */,
-				83607CB727E822A90009532A /* SwiftSyntaxParser */,
 				83D4345627F1BB5E001CEB84 /* XcodeProj */,
 				832582CC27F2085C005417C7 /* GraphViz */,
 			);
@@ -373,7 +308,6 @@
 			);
 			mainGroup = 83B78C252530832F00D339A7;
 			packageReferences = (
-				83B78C4B253083E000D339A7 /* XCRemoteSwiftPackageReference "swift-syntax" */,
 				83B78C582530849200D339A7 /* XCRemoteSwiftPackageReference "indexstore-db" */,
 				83B78C612530851500D339A7 /* XCRemoteSwiftPackageReference "swift-tools-support-core" */,
 				83D4345527F1BB5E001CEB84 /* XCRemoteSwiftPackageReference "XcodeProj" */,
@@ -411,39 +345,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83B78CB5253089E100D339A7 /* SuperClassRule.swift in Sources */,
-				83B78CB6253089E100D339A7 /* SkipOptionalFunctionRule.swift in Sources */,
-				83B78CB7253089E100D339A7 /* RuleFactory.swift in Sources */,
-				83B78CB8253089E100D339A7 /* BlacklistSources.swift in Sources */,
-				83B78CB9253089E100D339A7 /* CommentRule.swift in Sources */,
 				83B78CE2253178DD00D339A7 /* SwanKit.swift in Sources */,
-				83B78CBA253089E100D339A7 /* XCTestRule.swift in Sources */,
 				83B78CC425308A7500D339A7 /* Configuration.swift in Sources */,
-				83B78CBC253089E100D339A7 /* Rule.swift in Sources */,
-				83B78CBD253089E100D339A7 /* SkipPublicRule.swift in Sources */,
 				832E9DF827EA220A00EB6CC7 /* GraphFile.swift in Sources */,
-				83B78CBE253089E100D339A7 /* AttributesRule.swift in Sources */,
 				83B78CA02530898200D339A7 /* SymbolOccurrence+Extension.swift in Sources */,
 				83B78CA12530898200D339A7 /* Dictionary+Extension.swift in Sources */,
-				83B78CA22530898200D339A7 /* SwiftSyntax+Extension.swift in Sources */,
-				83B78CA32530898200D339A7 /* Array+Extension.swift in Sources */,
 				83607CBA27E9D1B60009532A /* GraphSymbolReporter.swift in Sources */,
 				83B78CA42530898200D339A7 /* Logging.swift in Sources */,
 				83B78CD125308B2400D339A7 /* Reporter.swift in Sources */,
 				83B78CA52530898200D339A7 /* LogLevel.swift in Sources */,
 				83B78CCF25308B2200D339A7 /* ConsoleReporter.swift in Sources */,
-				83B78C862530883B00D339A7 /* Function.swift in Sources */,
 				83B78C77253086E900D339A7 /* SourceKitServer.swift in Sources */,
-				83B78C832530882A00D339A7 /* SourceDetail.swift in Sources */,
-				83B78C802530880300D339A7 /* SourceLocation.swift in Sources */,
 				830D0D4D282B655500343F95 /* Project.swift in Sources */,
-				83B78CC125308A5300D339A7 /* CollectContext.swift in Sources */,
 				83B78CCB25308B1D00D339A7 /* ReporterFactory.swift in Sources */,
 				83B78C74253086D900D339A7 /* Workspace.swift in Sources */,
 				83B78C71253086B900D339A7 /* SourceCollector.swift in Sources */,
 				83B78C8C2530886100D339A7 /* RuleType.swift in Sources */,
 				83B78C7A253086FD00D339A7 /* DatabaseBuildSystem.swift in Sources */,
-				83B78CA82530899E00D339A7 /* SwiftSourceCollectPipeline.swift in Sources */,
 				83B78C7D253087C000D339A7 /* ThreadSafe.swift in Sources */,
 				83B78C892530884E00D339A7 /* ReporterType.swift in Sources */,
 				83B78C8F2530888500D339A7 /* Validation.swift in Sources */,
@@ -722,14 +640,6 @@
 				kind = branch;
 			};
 		};
-		83B78C4B253083E000D339A7 /* XCRemoteSwiftPackageReference "swift-syntax" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-syntax.git";
-			requirement = {
-				branch = release/5.6;
-				kind = branch;
-			};
-		};
 		83B78C582530849200D339A7 /* XCRemoteSwiftPackageReference "indexstore-db" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/indexstore-db.git";
@@ -761,21 +671,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 832582CB27F2085C005417C7 /* XCRemoteSwiftPackageReference "GraphViz" */;
 			productName = GraphViz;
-		};
-		83607CB727E822A90009532A /* SwiftSyntaxParser */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 83B78C4B253083E000D339A7 /* XCRemoteSwiftPackageReference "swift-syntax" */;
-			productName = SwiftSyntaxParser;
-		};
-		83B78C4C253083E000D339A7 /* SwiftSyntax */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 83B78C4B253083E000D339A7 /* XCRemoteSwiftPackageReference "swift-syntax" */;
-			productName = SwiftSyntax;
-		};
-		83B78C4E253083E000D339A7 /* SwiftSyntaxBuilder */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 83B78C4B253083E000D339A7 /* XCRemoteSwiftPackageReference "swift-syntax" */;
-			productName = SwiftSyntaxBuilder;
 		};
 		83B78C5D2530849200D339A7 /* IndexStoreDB */ = {
 			isa = XCSwiftPackageProductDependency;

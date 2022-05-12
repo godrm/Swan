@@ -46,61 +46,15 @@ public final class Analyzer {
         }
         return Array(foundSource.value)
     }
-
 }
 
 extension Analyzer {
-    
-    /// Detect  whether source code if used
-    /// - Parameter source: The source code to detect.
-    private func analyze(source: SourceDetail) -> [SymbolOccurrence] {
-        let symbols = sourceKitserver.findWorkspaceSymbols(matching: source.name)
-        print("\(source.name) => \(symbols)")
-        // If not find symbol of source, means source used.
-        guard let symbol = symbols.unique(of: source) else {
-            return []
-        }
-
-        // Skip declarations that override another. This works for both subclass overrides &
-        // protocol extension overrides.
-        let overridden = symbols.lazy.filter{ $0.symbol.usr != symbol.symbol.usr }.contains(where: { $0.isOverride(of: symbol) })
-        if overridden {
-            return []
-        }
-
-        if symbol.roles.contains(.overrideOf) {
-            return []
-        }
-        
-        let symbolOccurrenceResults = sourceKitserver.occurrences(
-            ofUSR: symbol.symbol.usr,
-            roles: [.reference, .calledBy, .receivedBy, .canonical, .containedBy, .definition, .declaration, .extendedBy],
-            workspace: workSpace)
-                   
-        return symbolOccurrenceResults
-    }
-    
     private func analyze(symbol: Symbol) -> [SymbolOccurrence] {
-
         let symbolOccurrenceResults = sourceKitserver.occurrences(
             ofUSR: symbol.usr,
             roles: [.reference, .calledBy, .canonical, .containedBy, .definition, .declaration, .extendedBy, .childOf, .ibTypeOf],
             workspace: workSpace)
                    
         return symbolOccurrenceResults
-    }
-
-    
-    /// In the rule class, struct, enum and protocol extensions  are not mean  used,
-    /// But in symbol their extensions are defined as referred,
-    /// So we need to filter their extensions.
-    /// - Parameters:
-    ///   - source: The source code, determine if need filter by source kind.
-    ///   - symbols: All the source symbols
-    private func filterExtension(source: SourceDetail, symbols: [SymbolOccurrence]) -> [SymbolOccurrence] {
-        guard source.needFilterExtension else {
-            return symbols
-        }
-        return symbols.lazy.filter { !$0.isSourceExtension(safeSources: sourceCodeCollector.sourceExtensions) }
     }
 }

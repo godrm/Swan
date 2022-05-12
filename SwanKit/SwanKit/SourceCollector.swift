@@ -6,14 +6,11 @@
 //
 
 import Foundation
-import SwiftSyntax
-import SwiftSyntaxParser
 import TSCBasic
 import IndexStoreDB
 import XcodeProj
 
 public typealias FileSystem = TSCBasic.FileSystem
-typealias SafeSourceExtensions = ThreadSafe<[String: SourceDetail]>
 
 extension Symbol : Hashable {
     public func hash(into hasher: inout Hasher) {
@@ -24,8 +21,6 @@ extension Symbol : Hashable {
 
 /// Collects source code in the path.
 class SourceCollector {
-
-    let sourceExtensions = SafeSourceExtensions([:])
     private(set) var sources: [AbsolutePath] = []
     private(set) var symbols: [Symbol] = []
     private let configuration: Configuration
