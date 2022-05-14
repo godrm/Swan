@@ -4,7 +4,7 @@ import TSCBasic
 /// Holds the complete set of configured values and defaults.
 public struct Configuration {
         
-    public let rules: [Rule]
+//    public let rules: [Rule]
     
     public let reporter: Reporter
     
@@ -20,7 +20,16 @@ public struct Configuration {
     
     /// The  project path
     public let projectPath: AbsolutePath
-    
+
+    /// The xcodeproj path
+    public let projectFilePath: AbsolutePath
+
+    /// The workspacedata path
+    public let workspaceFilePath: AbsolutePath?
+
+    /// The sourcePackage path
+    public let sourcePackagePath: String
+
     /// The project index storePath path
     public let indexStorePath: String
     
@@ -30,38 +39,47 @@ public struct Configuration {
     internal init(projectPath: AbsolutePath,
                   indexStorePath: String,
                   indexDatabasePath: String? = nil,
-                  rules: [Rule],
+//                  rules: [Rule],
                   reporter: Reporter,
                   included: [AbsolutePath],
                   excluded: [AbsolutePath],
                   blacklistFiles: [String],
                   blacklistSymbols: [String],
-                  outputFile: AbsolutePath) {
+                  outputFile: AbsolutePath,
+                  projectFilePath: AbsolutePath,
+                  workspaceFilePath: AbsolutePath?,
+                  sourcePackagePath: String) {
         self.projectPath = projectPath
         self.indexStorePath = indexStorePath
         self.indexDatabasePath = indexDatabasePath ?? NSTemporaryDirectory() + "index_\(getpid())"
-        self.rules = rules
+//        self.rules = rules
         self.reporter = reporter
         self.included = included
         self.excluded = excluded
         self.blacklistFiles = blacklistFiles
         self.blacklistSymbols = blacklistSymbols
         self.outputFile = outputFile
+        self.projectFilePath = projectFilePath
+        self.workspaceFilePath = workspaceFilePath
+        self.sourcePackagePath = sourcePackagePath
     }
     
-    public init(projectPath: AbsolutePath, indexStorePath: String = "", indexDatabasePath: String? = nil, reportType: ReporterType = .console, outputFile: String = "swan.output.pdf") {
+    public init(projectPath: AbsolutePath, projectFilePath: AbsolutePath, workspaceFilePath: AbsolutePath? = nil, indexStorePath: String = "", indexDatabasePath: String? = nil, sourcePackagePath: String = "", reportType: ReporterType = .console, outputFile: String = "swan.output.pdf") {
         let reporter = ReporterFactory.make(reportType)
-        let rules = RuleFactory.make()
+//        let rules = RuleFactory.make()
         let outputFilePath = AbsolutePath(projectPath.asURL.path).appending(component: outputFile)
         self.init(projectPath: projectPath,
                   indexStorePath: indexStorePath,
                   indexDatabasePath: indexDatabasePath,
-                  rules: rules,
+//                  rules: rules,
                   reporter: reporter,
                   included: ([""]).map{ projectPath.appending(component: $0)},
                   excluded: (["Pods"]).map{ projectPath.appending(component: $0)} ,
                   blacklistFiles: [],
                   blacklistSymbols: [],
-                  outputFile: outputFilePath)
+                  outputFile: outputFilePath,
+                  projectFilePath: projectFilePath,
+                  workspaceFilePath: workspaceFilePath,
+                  sourcePackagePath: sourcePackagePath)
     }
 }

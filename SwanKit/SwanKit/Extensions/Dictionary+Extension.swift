@@ -1,7 +1,6 @@
 import Foundation
 
 extension Dictionary {
-
     /// Merge keys/values of two dictionaries. If key is conflict, use the second dictionary.
     ///
     /// let dict : [String : String] = ["key1" : "value1"]

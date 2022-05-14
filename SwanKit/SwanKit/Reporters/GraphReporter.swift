@@ -15,7 +15,7 @@ public struct GraphReporter: Reporter {
         return url.lastPathComponent
     }
     
-    public func report(_ configuration: Configuration, sources: [SourceDetail:[SymbolOccurrence]]) -> [String] {
+    public func report(_ configuration: Configuration, sources: [SymbolOccurrence]) -> [String] {
         var graph = Graph(directed: true)
         var fileMap = Dictionary<String, Subgraph>()
         var nodeMap = Dictionary<String, Node>()
@@ -33,11 +33,13 @@ public struct GraphReporter: Reporter {
                 fileMap[name] = subgraph
                 graph.append(subgraph!)
             }
-            let node = Node((key.sourceKind == .protocol) ? "<<\(key.name)>>": key.name)
-            if key.sourceKind == .class || key.sourceKind == .enum || key.sourceKind == .struct || key.sourceKind == .protocol {
-                node.shape = .box
-                node.textColor = Color.named(.darkviolet)
-            }            
+            
+            var label = "\(key.name)"
+            if (key.sourceKind == .protocol) {
+                label = "<<\(key.name)>>"
+            }
+            var node = Node(key.name)
+            node.label = label
             nodeMap[key.name] = node
             subgraph?.append(node)
         }
@@ -64,7 +66,7 @@ public struct GraphReporter: Reporter {
                     subgraph?.append(other!)
                 }
                 let edge = Edge(from: other!, to: node!)
-                subgraph?.append(edge)
+                graph.append(edge)
             }
         }
 

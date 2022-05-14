@@ -2,20 +2,6 @@ import Foundation
 import IndexStoreDB
 
 extension SymbolOccurrence {
-    
-    /// Whether symbol is class, struct, enum, protocol extensions
-    /// - Parameter sources: All the source extensions
-    func isSourceExtension(safeSources: SafeSourceExtensions) -> Bool {
-        guard safeSources.value[self.identifier] != nil else {
-            return false
-        }
-        safeSources.atomically { $0[self.identifier] = nil }
-        return true
-    }
-}
-
-extension SymbolOccurrence {
-    
     /// Whether  is override of giving symbol
     /// - Parameter symbol: giving symbol
     func isOverride(of symbol: SymbolOccurrence) -> Bool {
