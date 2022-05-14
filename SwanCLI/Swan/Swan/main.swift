@@ -14,6 +14,8 @@ class Command: ParsableCommand {
     @Option var project: String?
     @Option var workspace: String?
     @Option var scheme: String?
+    @Option var format: String?
+    @Option var output: String?
     
     required init() {
     }
@@ -24,6 +26,8 @@ class Command: ParsableCommand {
         print("""
             project = \(project ?? "") \
             scheme = \(scheme ?? "") for workspace = \(workspace ?? "")
+            format = \(format ?? "")
+            output = \(output ?? "")
             """)
         let projectManager = ProjectManager()
 
@@ -37,7 +41,7 @@ class Command: ParsableCommand {
             options.path = project
             options.projectFilePath = project_filepath
             options.workspaceFilePath = workspace_filepath ?? ""
-            options.mode = .console
+            options.mode = .init(rawValue: self.format ?? "console") ?? .console
             let sources = self.analyze(with: options)
             self.report(for: sources, with: options)
             lock.leave()
@@ -60,7 +64,7 @@ class Command: ParsableCommand {
     
     private func analyze(with options : CommandLineOptions) -> [SymbolOccurrence] {
         do {
-            let configuration = try createConfiguration(options: options, outputFile: "swan.report.md")
+            let configuration = try createConfiguration(options: options)
             let analyzer = try Analyzer(configuration: configuration)
             let symbols = try analyzer.analyzeSymbols()
             return symbols
@@ -72,7 +76,8 @@ class Command: ParsableCommand {
 
     private func report(for sources: [SymbolOccurrence], with options: CommandLineOptions) {
         do {
-            let configuration = try createConfiguration(options: options)
+            let configuration = try createConfiguration(options: options,
+                                                        outputFile: output ?? ((options.mode == .graphviz) ? "swan.report.pdf" : "swan.report.md"))
             let _ = configuration.reporter.report(configuration, occurrences: sources)
         } catch {
             log(error.localizedDescription, level: .error)

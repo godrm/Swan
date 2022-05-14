@@ -10,14 +10,11 @@ import IndexStoreDB
 public struct ConsoleReporter: Reporter {
     
     public func report(_ configuration: Configuration, occurrences: [SymbolOccurrence]) -> [String] {
-        var result = [String]()
-        for occurrence in occurrences {
-            result.append(occurrence.description)
-        }
-        let report = result.joined(separator: "\n")
+        var report = ""
+        dump(occurrences, to: &report)
         let data = report.data(using: .utf8)
-        try? data?.write(to: URL(fileURLWithPath: "/var/tmp/swan-report.txt"))
+        try? data?.write(to: URL(fileURLWithPath: configuration.outputFile.pathString))
         print(report)
-        return result
+        return [report]
     }
 }

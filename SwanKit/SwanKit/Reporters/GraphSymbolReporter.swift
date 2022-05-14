@@ -9,59 +9,72 @@ import IndexStoreDB
 import GraphViz
 import DOT
 
-public struct GraphSymbolReporter: Reporter {
+public final class GraphSymbolReporter: Reporter {
     static let FontName = "SF Mono"
-    
+    private var graph = Graph(directed: true)
+    private var moduleMap = Dictionary<String, Subgraph>()
+    private var fileMap = Dictionary<String, Subgraph>()
+    private var objectMap = Dictionary<String, Subgraph>()
+    private var clusterIndex = 1
+    private var moduleIndex = 0
+
     private func filename(from path:String) -> String {
         let url = URL(fileURLWithPath: path)
         return url.lastPathComponent
     }
     
+    private func makeModule(label: String, moduleKey: String) -> Subgraph {
+        let module = Subgraph(id: "cluster_m\(moduleIndex)", label: label)
+        moduleIndex += 1
+        module.textColor = Color.named(.indianred4)
+        module.borderWidth = 4
+        module.borderColor = Color.named(.indianred4)
+        moduleMap[moduleKey] = module
+        graph.append(module)
+        return module
+    }
+    
+    private func makeFile(label: String, locationPath: String) -> Subgraph {
+        let file = Subgraph(id: "cluster_f\(clusterIndex)", label: label)
+        clusterIndex += 1
+        file.textColor = Color.named(.blue)
+        file.borderWidth = 2
+        file.borderColor = Color.named(.blue)
+        file.fontName = Self.FontName
+        fileMap[locationPath] = file
+        return file
+    }
+
+    private func makeObject(label: String, objectKey: String) -> Subgraph {
+        let object = Subgraph(id: "cluster_o\(clusterIndex)", label: label)
+        clusterIndex += 1
+        object.textColor = Color.named(.darkseagreen4)
+        object.borderWidth = 1
+        object.borderColor = Color.named(.darkseagreen4)
+        object.fontName = Self.FontName
+        objectMap[objectKey] = object
+        return object
+    }
+
     public func report(_ configuration: Configuration, occurrences: [SymbolOccurrence]) -> [String] {
-        var graph = Graph(directed: true)
-        var moduleMap = Dictionary<String, Subgraph>()
-        var fileMap = Dictionary<String, Subgraph>()
-        var objectMap = Dictionary<String, Subgraph>()
         var nodeToObjectMap = Dictionary<Node, Subgraph>()
         var nodeUSRMap = Dictionary<String, Node>()
         var usrToFileMap = Dictionary<String, String>()
         var implicitMap = Dictionary<String, Symbol>()
         var extensionMap = Dictionary<String, Subgraph>()
         var edges = Set<Edge>()
-        var clusterIndex = 1
-        var moduleIndex = 0
 
-        let systemModule = Subgraph(id: "cluster_m\(moduleIndex)", label: "System")
-        moduleIndex += 1
-        systemModule.textColor = Color.named(.indianred4)
-        systemModule.borderWidth = 1
-        systemModule.borderColor = Color.named(.indianred4)
-        moduleMap["System"] = systemModule
-        graph.append(systemModule)
-
+        let systemModule = makeModule(label: "System", moduleKey: "System")
         for selected in occurrences {
             var module : Subgraph? = moduleMap[selected.location.moduleName]
             if module == nil {
-                module = Subgraph(id: "cluster_m\(moduleIndex)", label: selected.location.moduleName + " Module")
-                moduleIndex += 1
-                module?.textColor = Color.named(.indianred4)
-                module?.borderWidth = 1
-                module?.borderColor = Color.named(.indianred4)
-                module?.fontName = Self.FontName
-                moduleMap[selected.location.moduleName] = module
-                graph.append(module!)
+                module = makeModule(label: selected.location.moduleName + " Module", moduleKey: selected.location.moduleName)
             }
             
             let name = filename(from: selected.location.path)
             var file : Subgraph? = fileMap[selected.location.path]
             if file == nil {
-                file = Subgraph(id: "cluster_f\(clusterIndex)", label: name)
-                clusterIndex += 1
-                file?.textColor = Color.named(.blue)
-                file?.borderWidth = 1
-                file?.borderColor = Color.named(.blue)
-                file?.fontName = Self.FontName
-                fileMap[selected.location.path] = file
+                file = makeFile(label: name, locationPath: selected.location.path)
                 module?.append(file!)
             }
             
@@ -106,14 +119,7 @@ public struct GraphSymbolReporter: Reporter {
                     if selected.symbol.isKindOfObject() {
                         var object : Subgraph? = objectMap[selected.symbol.usr]
                         if object == nil {
-                            object = Subgraph(id: "cluster_o\(clusterIndex)",
-                                              label: "\(selected.symbol.kind) \(selected.symbol.name)")
-                            clusterIndex += 1
-                            object?.textColor = Color.named(.darkseagreen4)
-                            object?.borderWidth = 1
-                            object?.borderColor = Color.named(.darkseagreen4)
-                            object?.fontName = Self.FontName
-                            objectMap[selected.symbol.usr] = object
+                            object = makeObject(label: "\(selected.symbol.kind) \(selected.symbol.name)", objectKey: selected.symbol.usr)
                             file?.append(object!)
                         }
                         
@@ -140,14 +146,7 @@ public struct GraphSymbolReporter: Reporter {
                         if relation.roles.contains(.childOf) && relation.symbol.isKindOfObject() {
                             var object : Subgraph? = objectMap[relation.symbol.usr]
                             if object == nil {
-                                object = Subgraph(id: "cluster_o\(clusterIndex)",
-                                                  label: "\(relation.symbol.kind) \(relation.symbol.name)")
-                                clusterIndex += 1
-                                object?.textColor = Color.named(.darkseagreen4)
-                                object?.borderWidth = 1
-                                object?.borderColor = Color.named(.darkseagreen4)
-                                object?.fontName = Self.FontName
-                                objectMap[relation.symbol.usr] = object
+                                object = makeObject(label: "\(relation.symbol.kind) \(relation.symbol.name)", objectKey: relation.symbol.usr)
                                 file?.append(object!)
                             }
                             if nodeToObjectMap[node!] == nil {
@@ -224,13 +223,7 @@ public struct GraphSymbolReporter: Reporter {
                     if founded {
                         var object : Subgraph? = objectMap[relation.symbol.usr]
                         if object == nil {
-                            object = Subgraph(id: "cluster_o\(clusterIndex)", label: "\(relation.symbol.kind) \(relation.symbol.name)")
-                            clusterIndex += 1
-                            object?.textColor = Color.named(.darkseagreen4)
-                            object?.borderWidth = 1
-                            object?.borderColor = Color.named(.darkseagreen4)
-                            object?.fontName = Self.FontName
-                            objectMap[relation.symbol.usr] = object
+                            object = makeObject(label: "\(relation.symbol.kind) \(relation.symbol.name)", objectKey: relation.symbol.usr)
                             file?.append(object!)
                         }
                         if nodeToObjectMap[node!] == nil {
@@ -345,7 +338,7 @@ public struct GraphSymbolReporter: Reporter {
         }
         
         // Render image using dot layout algorithm
-        _ = try? graph.render(using: .dot, to: Format.pdf, output: configuration.outputFile.pathString)
+        _ = try? graph.render(using: .dot, to: Format.pdf, output: configuration.outputFile.pathString, removeFlag: false)
         return [configuration.outputFile.pathString]
     }
 }
