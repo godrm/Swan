@@ -53,31 +53,39 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "--project"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/godrm/Work/godrm.me/github/BlackSwan/BlackSwan.xcodeproj"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--workspace"
+            argument = "/Users/godrm/Work/godrm.me/github/CanvasApp/CanvasApp.xcodeproj"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--workspace"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/godrm/Work/godrm.me/github/BlackSwan/BlackSwan.xcworkspace"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--scheme"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "BlackSwan"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--format"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "graphviz"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "console"

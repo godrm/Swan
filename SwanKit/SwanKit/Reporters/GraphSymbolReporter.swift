@@ -64,8 +64,10 @@ public final class GraphSymbolReporter: Reporter {
         var extensionMap = Dictionary<String, Subgraph>()
         var edges = Set<Edge>()
 
-        let systemModule = makeModule(label: "System", moduleKey: "System")
-        for selected in occurrences {
+        //FIXME: SystemModule is remarked. (Now Not Use)
+        //let systemModule = makeModule(label: "System", moduleKey: "System")
+        for selected in occurrences where selected.roles.contains(.definition) && selected.roles.contains(.canonical) && selected.relations.count == 0 {
+            
             var module : Subgraph? = moduleMap[selected.location.moduleName]
             if module == nil {
                 module = makeModule(label: selected.location.moduleName + " Module", moduleKey: selected.location.moduleName)
@@ -78,13 +80,20 @@ public final class GraphSymbolReporter: Reporter {
                 module?.append(file!)
             }
             
+            if selected.symbol.isKindOfObject() {
+                var object : Subgraph? = objectMap[selected.symbol.usr]
+                if object == nil {
+                    object = makeObject(label: "\(selected.symbol.kind) \(selected.symbol.name)", objectKey: selected.symbol.usr)
+                    file?.append(object!)
+                }
+            }
+        }
+        
+        for selected in occurrences {
+            let file : Subgraph? = fileMap[selected.location.path]
+            
             if selected.roles.contains(.definition) || selected.relations.count == 0  {
-                if (
-                    ((selected.roles.contains(.implicit) && selected.roles.contains(.definition)) ||
-                     (selected.roles.contains(.accessorOf) && selected.roles.contains(.definition)) ) &&
-                         selected.relations.count == 1 &&
-                         (selected.symbol.name.hasPrefix("getter:") ||
-                          selected.symbol.name.hasPrefix("setter:"))) {
+                if selected.isImplicitProperty() {
                     implicitMap[selected.symbol.usr] = selected.relations.first!.symbol
                     continue
                 }
@@ -96,8 +105,7 @@ public final class GraphSymbolReporter: Reporter {
                     continue
                 }
                 if selected.symbol.kind == .parameter ||
-                    selected.symbol.kind == .extension ||
-                    selected.symbol.kind == .enumConstant {
+                    selected.symbol.kind == .extension {
                     continue
                 }
 
@@ -122,7 +130,15 @@ public final class GraphSymbolReporter: Reporter {
                             object = makeObject(label: "\(selected.symbol.kind) \(selected.symbol.name)", objectKey: selected.symbol.usr)
                             file?.append(object!)
                         }
-                        
+                        else if let relation = selected.relations.first,
+                            relation.roles.contains(.childOf),
+                            relation.symbol.isKindOfObject(),
+                           let container = objectMap[relation.symbol.usr]
+                        {
+                            container.append(object!)
+                            continue
+                        }
+
                         for relation in selected.relations where relation.symbol.kind == .extension {
                             extensionMap[relation.symbol.usr] = object!
                         }
@@ -131,7 +147,8 @@ public final class GraphSymbolReporter: Reporter {
                     }
                     else if selected.symbol.kind == .typealias {
                         node?.shape = .box
-                        node?.textColor = Color.named(.darkviolet)
+                        node?.textColor = Color.named(.darkkhaki)
+                        //FIXME: typealias need to show original type
                     }
                     else if selected.symbol.kind == .classProperty
                                 || selected.symbol.kind == .staticProperty
@@ -258,11 +275,14 @@ public final class GraphSymbolReporter: Reporter {
                 }
                                                 
                 if let object = objectMap[selectedUSR], nodeToObjectMap[node!] == nil &&  selected.roles.contains(.reference) {
-                    object.append(node!)
-                    nodeToObjectMap[node!] = object
-                    nodeUSRMap[selectedUSR] = node!
+                    //FIXME: property is a some object
+                    continue
+//                    object.append(node!)
+//                    nodeToObjectMap[node!] = object
+//                    nodeUSRMap[selectedUSR] = node!
                 }
-                else if let object = objectMap[relation.symbol.usr], relation.roles.contains(.receivedBy) {
+                else
+                if let object = objectMap[relation.symbol.usr], relation.roles.contains(.receivedBy) {
                     if nodeToObjectMap[node!] == nil {
                         object.append(node!)
                         nodeToObjectMap[node!] = object
@@ -292,22 +312,23 @@ public final class GraphSymbolReporter: Reporter {
                     let mapped = implicitMap[relation.symbol.usr] {
                     mappedSymbol = mapped
                 }
-                var symbolName = "\(mappedSymbol.name)"
-                if (mappedSymbol.kind == .protocol) {
-                    symbolName = "<<\(mappedSymbol.name)>>"
-                }
                 var other = nodeUSRMap[mappedSymbol.usr]
                 if other == nil {
-                    if (mappedSymbol.kind == .staticMethod || mappedSymbol.kind == .classMethod) {
+                    if let object = objectMap[selectedUSR], nodeToObjectMap[node!] == nil {
+                        object.append(node!)
+                        nodeToObjectMap[node!] = object
+                        continue
+                    }
+                    
+                    var symbolName = "\(mappedSymbol.name)"
+                    if (mappedSymbol.kind == .protocol) {
+                        symbolName = "<<\(mappedSymbol.name)>>"
+                    }
+                    else if (mappedSymbol.kind == .staticMethod || mappedSymbol.kind == .classMethod) {
                         symbolName = "+\(mappedSymbol.name)"
                     }
                     else if (mappedSymbol.kind == .instanceMethod) {
                         symbolName = "-\(mappedSymbol.name)"
-                    }
-                    else if let object = objectMap[selectedUSR], nodeToObjectMap[node!] == nil {
-                        object.append(node!)
-                        nodeToObjectMap[node!] = object
-                        continue
                     }
                     other = Node(mappedSymbol.usr)
                     other?.label = symbolName + (selected.symbol.properties.contains(.ibAnnotated) ? "@IB" : "")
