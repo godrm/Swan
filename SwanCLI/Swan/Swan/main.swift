@@ -22,19 +22,19 @@ class Command: ParsableCommand {
         let lock = DispatchGroup.init()
         
         print("""
-            project = \(project) \
-            scheme = \(scheme) for workspace = \(workspace)
+            project = \(project ?? "") \
+            scheme = \(scheme ?? "") for workspace = \(workspace ?? "")
             """)
         let projectManager = ProjectManager()
 
-        let handler : (URL?, String, String) -> Void = { [weak self] (targetURL, project_dir, project_filepath, workspace_filepath) in
-            guard let self = self, let target = targetURL, project_dir.count > 0 else {
+        let handler : (URL?, String, String, String?) -> Void = { [weak self] (targetURL, project, project_filepath, workspace_filepath) in
+            guard let self = self, let target = targetURL, project.count > 0 else {
                 lock.leave()
                 return
             }
             var options = CommandLineOptions()
             options.buildPath = target.path
-            options.path = project_dir
+            options.path = project
             options.projectFilePath = project_filepath
             options.workspaceFilePath = workspace_filepath ?? ""
             options.mode = .console
