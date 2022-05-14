@@ -13,8 +13,9 @@ Swan is **SW**ift static code **AN**anlyzer from xcode derived data.
 [Pecker](https://github.com/woshiccm/Pecker) 와 [Sitrep](https://github.com/twostraws/Sitrep) 프로젝트에서 영감을 받았습니다.
 명령 기반이 아니라 시각화에 촛점을 맞추고 있습니다.
 
-Swan 프로젝트는 애플의 오픈소스 [SwiftSyntax](https://github.com/apple/swift-syntax) 와 [IndexStoreDB](https://github.com/apple/indexstore-db)를 활용해서 Xcode가 빌드한 인덱스 파일을 분석합니다. 그래서 프로젝트 빌드하는 Xcode 버전과 Swift 버전을 맞춰서 실행해야 합니다.
+Swan 프로젝트는 애플의 오픈소스 [IndexStoreDB](https://github.com/apple/indexstore-db)를 활용해서 Xcode가 빌드한 인덱스 파일을 분석합니다. 그래서 프로젝트 빌드하는 Xcode 버전과 Swift 버전을 맞춰서 실행해야 합니다.
 
+[SwiftSyntax](https://github.com/apple/swift-syntax)로 소스 파일을 분석하는 방식을 제거했습니다. 대신 xcodeproj 와 xcworkspace에 포함된 소스 파일들과 심볼들만 분석합니다. 
 ---
 
 
@@ -26,7 +27,9 @@ Swan 프로젝트는 애플의 오픈소스 [SwiftSyntax](https://github.com/app
 
 It inspired from [Pecker](https://github.com/woshiccm/Pecker) and [Sitrep](https://github.com/twostraws/Sitrep). 
 
-Swan is built using Apple’s [SwiftSyntax](https://github.com/apple/swift-syntax) and [IndexStoreDB](https://github.com/apple/indexstore-db) for analyzing. 
+Swan is built using Apple’s [IndexStoreDB](https://github.com/apple/indexstore-db) for analyzing. 
+
+Now, [SwiftSyntax](https://github.com/apple/swift-syntax) is removed for scanning source file in directories. Swan uses files and symbols in xcodeproj and xcworkspace. 
 
 
 Screenshot
@@ -73,18 +76,14 @@ Builds
 - 저장소를 클론해서 받으세요
 - swan.xcworkspace 워크스페이스 파일을 열고
 - SwanKit 프로젝트 설정에서 `Package Dependencies` 탭에 있는 버전 정보를 맞춥니다
-    예를 들어 스위프트 5.6으로 컴파일하는 Xcode 13.3 이라면,  `IndexStoreDB, swift-tools-support-core, SwiftSyntax` 패키지 버전 규칙을 `release/5.6`으로 변경해야 합니다
-- 스위프트 문법이 올라가면서 SwiftSyntax 구조가 바뀌는 경우에는, 그럴 때는 빌드를 위해서 코드를 수정해야 할 수 있습니다
-    스위프트 5.6에서도 SwiftSyntax에 Parser가 별도 타깃(라이브러리)으로 분리되었습니다 
+    예를 들어 스위프트 5.6으로 컴파일하는 Xcode 13.3 이라면,  `IndexStoreDB, swift-tools-support-core` 패키지 버전 규칙을 `release/5.6`으로 변경해야 합니다
 
 ---
 
 - clone this repository
 - open the swan.xcworkspace
-- In `Package Dependencies` Tab for SwanKit Project, reset packages for SwiftSyntax, IndexStoreDB version that are exactly same swift compiler version
-    If you need to compile swift 5.6, `IndexStoreDB, swift-tools-support-core, SwiftSyntax` package's version rule should be `release/5.6`. 
-- When SwiftSyntax changed for new syntax, we need to fix that. 
-    For Swift 5.6, SwiftSyntaxParser library split from SwiftSyntax.
+- In `Package Dependencies` Tab for SwanKit Project, reset packages for IndexStoreDB version that are exactly same swift compiler version
+    If you need to compile swift 5.6, `IndexStoreDB, swift-tools-support-core` package's version rule should be `release/5.6`. 
 
 
 Contributions
