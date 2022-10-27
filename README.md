@@ -70,6 +70,7 @@ Features (한글)
 Downloads
 -------------
 [Swan - Developer Build for Swift5.7 & Xcode 14](https://public.codesquad.kr/jk/swan/Swan.app.swift5.7.zip)
+
 [Swan - Developer Build for Swift5.6 & Xcode 13.3](https://public.codesquad.kr/jk/swan/Swan.app.swift5.6.zip)
 
 
