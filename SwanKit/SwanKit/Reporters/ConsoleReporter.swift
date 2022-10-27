@@ -9,12 +9,12 @@ import IndexStoreDB
 
 public struct ConsoleReporter: Reporter {
     
-    public func report(_ configuration: Configuration, occurrences: [SymbolOccurrence]) -> [String] {
+    public func report(_ configuration: Configuration, occurrences: [SymbolOccurrence], finder: SymbolFindable? = nil) -> [String] {
         var report = ""
         dump(occurrences, to: &report)
         let data = report.data(using: .utf8)
         try? data?.write(to: URL(fileURLWithPath: configuration.outputFile.pathString))
-        print(report)
+//        print(report)
         return [report]
     }
 }

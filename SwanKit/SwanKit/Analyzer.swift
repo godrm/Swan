@@ -10,7 +10,11 @@ import IndexStoreDB
 import TSCBasic
 import XcodeProj
 
-public final class Analyzer {
+public protocol SymbolFindable {
+    func isInSPM(for locationPath: String) -> Bool
+}
+
+public final class Analyzer : SymbolFindable {
     private let sourceCodeCollector: SourceCollector
     private let sourceKitserver: SourceKitServer
     private let workSpace: Workspace
@@ -19,15 +23,23 @@ public final class Analyzer {
     private var xcworkspace : XCWorkspace? = nil
     
     public init(configuration: Configuration) throws {
+        self.configuration = configuration
         xcodeproj = try XcodeProj.init(pathString: configuration.projectFilePath.pathString)
         if let workspacePath = configuration.workspaceFilePath?.pathString {
             xcworkspace = try? XCWorkspace.init(pathString: workspacePath)
-        }
-        sourceCodeCollector = SourceCollector(rootPath: configuration.projectPath,
+            let workspaceURL = URL(fileURLWithPath: workspacePath)
+            let pathURL = workspaceURL.deletingLastPathComponent()
+            sourceCodeCollector = SourceCollector(rootPath: AbsolutePath(pathURL.path),
                                               configuration: configuration,
                                               xcodeproj: xcodeproj,
                                               xcworkspace: xcworkspace)
-        self.configuration = configuration
+        }
+        else {
+            sourceCodeCollector = SourceCollector(rootPath: configuration.projectPath,
+                                              configuration: configuration,
+                                              xcodeproj: xcodeproj,
+                                              xcworkspace: nil)
+        }
         let buildSystem = DatabaseBuildSystem(indexStorePath: configuration.indexStorePath,
                                               indexDatabasePath: configuration.indexDatabasePath)
         workSpace = try Workspace(buildSettings: buildSystem)
@@ -37,15 +49,19 @@ public final class Analyzer {
         
     public func analyzeSymbols() throws -> [SymbolOccurrence] {
         let foundSource = ThreadSafe<Set<SymbolOccurrence>>([])
-        sourceCodeCollector.collectSymbolsProject(with: workSpace.index!)
+        if xcworkspace != nil {
+            sourceCodeCollector.collectSymbolsWorkspace(with: workSpace.index!, includeSPM: configuration.includeSPM)
+        }
+        else {
+            sourceCodeCollector.collectSymbolsProject(with: workSpace.index!, includeSPM: configuration.includeSPM)
+        }
         DispatchQueue.concurrentPerform(iterations: sourceCodeCollector.symbols.count) { (index) in
                 let symbol = sourceCodeCollector.symbols[index]
                 let occurs = analyze(symbol: symbol)
                 foundSource.atomically {
-                    for occur in occurs {
-                        if sourceCodeCollector.hasSource(filePath: occur.location.path) {
-                            $0.insert(occur)
-                        }
+                    let filtered = occurs.filter { sourceCodeCollector.hasSource(filePath: $0.location.path) }
+                    for occur in filtered {
+                        $0.insert(occur)
                     }
                 }
         }
@@ -59,5 +75,9 @@ public final class Analyzer {
             workspace: workSpace)
                    
         return symbolOccurrenceResults
+    }
+    
+    public func isInSPM(for locationPath: String) -> Bool {
+        return sourceCodeCollector.hasSourceInSPM(filePath: locationPath)
     }
 }

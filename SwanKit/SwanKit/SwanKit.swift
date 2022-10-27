@@ -29,16 +29,27 @@ public struct CommandLineOptions {
     /// If not specified, the default is find from DerivedData with project name
     public var buildPath: String = ""
     
+    public var includeSPM: Bool = false
+    
     public init() {
     }
 }
 
 public func createConfiguration(options: CommandLineOptions, outputFile: String = "swan.output.pdf") throws -> Configuration {
-    let indexStorePath: AbsolutePath
+    let indexStoreV5Path: AbsolutePath
     let sourcePackagePath: AbsolutePath
     let buildRootPath = AbsolutePath(options.buildPath)
-    indexStorePath = buildRootPath.appending(components: ["Index", "DataStore"])
     sourcePackagePath = buildRootPath.appending(components: ["SourcePackages","checkouts"])
+
+    indexStoreV5Path = buildRootPath.appending(components: ["Index", "DataStore", "v5"])
+    let reachable = (try? indexStoreV5Path.asURL.checkResourceIsReachable()) ?? false
+    var indexStorePath: AbsolutePath
+    if reachable  {
+        indexStorePath = buildRootPath.appending(components: ["Index", "DataStore"])
+    }
+    else {
+        indexStorePath = buildRootPath.appending(components: ["Index.noindex", "DataStore"])
+    }
     
     guard let cwd = localFileSystem.currentWorkingDirectory else {
         throw PEError.fiendCurrentWorkingDirectoryFailed
@@ -50,7 +61,8 @@ public func createConfiguration(options: CommandLineOptions, outputFile: String 
                                       indexStorePath: indexStorePath.asURL.path,
                                       sourcePackagePath: sourcePackagePath.asURL.path,
                                       reportType: options.mode,
-                                      outputFile: outputFile)
+                                      outputFile: outputFile,
+                                      includeSPM: options.includeSPM)
     return configuration
 }
 

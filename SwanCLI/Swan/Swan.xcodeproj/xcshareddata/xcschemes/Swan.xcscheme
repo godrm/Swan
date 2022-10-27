@@ -56,12 +56,16 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "/Users/godrm/Work/codesquad.kr/github/kakao-swift-chessgame/SwiftChess.xcodeproj"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "/Users/godrm/Work/godrm.me/github/BlackSwan/BlackSwan.xcodeproj"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/godrm/Work/godrm.me/github/CanvasApp/CanvasApp.xcodeproj"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--workspace"
@@ -72,7 +76,15 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "/Users/godrm/Work/godrm.me/github/Swan/Swan.xcworkspace"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "--scheme"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "SwanApp"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -85,11 +97,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "graphviz"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "console"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--output"

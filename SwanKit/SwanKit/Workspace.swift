@@ -30,6 +30,7 @@ class Workspace {
                     storePath: URL(fileURLWithPath: storePath).path,
                     databasePath: NSTemporaryDirectory() + "index_\(getpid())",
                     library: lib,
+                    enableOutOfDateFileWatching: true,
                     listenToUnitEvents: false)
                 log("opened IndexStoreDB at \(dbPath) with store path \(storePath)")
             } catch {

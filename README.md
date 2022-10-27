@@ -53,6 +53,7 @@ Features (한글)
 
 - 단, Swan은 GraphViz 라는 오픈소스 도구를 사용합니다. 꼭 $PATH에 graphviz 도구를 설치하셔야 합니다. 
 [GraphViz 다운로드 바로가기](https://graphviz.org/download/)
+    or `brew install graphviz`
 
 ---
 
@@ -63,11 +64,13 @@ Features (한글)
 
 - Swan use GraphViz to draw graph. It should be installed graphviz in running $PATH.
 [GraphViz Download](https://graphviz.org/download/)
+    or `brew install graphviz`
 
 
 Downloads
 -------------
-[Swan - Developer Build for Swift5.6 & Xcode 13.3](https://public.codesquad.kr/jk/Swan/Swan.app.swift5.6.zip)
+[Swan - Developer Build for Swift5.7 & Xcode 14](https://public.codesquad.kr/jk/swan/Swan.app.swift5.7.zip)
+[Swan - Developer Build for Swift5.6 & Xcode 13.3](https://public.codesquad.kr/jk/swan/Swan.app.swift5.6.zip)
 
 
 

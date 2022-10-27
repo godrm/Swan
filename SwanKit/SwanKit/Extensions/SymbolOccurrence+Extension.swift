@@ -15,6 +15,10 @@ extension SymbolOccurrence {
                 (self.symbol.name.hasPrefix("getter:") ||
                  self.symbol.name.hasPrefix("setter:"))
     }
+    
+    func isDefinition() -> Bool {
+        self.roles.contains(.definition) && self.roles.contains(.canonical) && self.relations.count == 0
+    }
 }
 
 extension SymbolOccurrence {

@@ -22,7 +22,7 @@ class Command: ParsableCommand {
     
     func run() throws {
         let lock = DispatchGroup.init()
-        
+
         print("""
             project = \(project ?? "") \
             scheme = \(scheme ?? "") for workspace = \(workspace ?? "")
@@ -36,14 +36,23 @@ class Command: ParsableCommand {
                 lock.leave()
                 return
             }
+            var analyzer : Analyzer
             var options = CommandLineOptions()
             options.buildPath = target.path
             options.path = project
             options.projectFilePath = project_filepath
             options.workspaceFilePath = workspace_filepath ?? ""
             options.mode = .init(rawValue: self.format ?? "console") ?? .console
-            let sources = self.analyze(with: options)
-            self.report(for: sources, with: options)
+            options.includeSPM = true
+            do {
+                let configuration = try createConfiguration(options: options, outputFile: ((options.mode == .graphviz) ? "swan.report.pdf" : "swan.report.md"))
+                analyzer = try Analyzer(configuration: configuration)
+                self.report(with: configuration, analyzer: analyzer)
+            } catch {
+                log(error.localizedDescription, level: .error)
+                lock.leave()
+                return
+            }
             lock.leave()
         }
         
@@ -62,23 +71,10 @@ class Command: ParsableCommand {
         lock.wait()
     }
     
-    private func analyze(with options : CommandLineOptions) -> [SymbolOccurrence] {
+    private func report(with config: Configuration, analyzer: Analyzer) {
         do {
-            let configuration = try createConfiguration(options: options)
-            let analyzer = try Analyzer(configuration: configuration)
-            let symbols = try analyzer.analyzeSymbols()
-            return symbols
-        } catch {
-            log(error.localizedDescription, level: .error)
-        }
-        return []
-    }
-
-    private func report(for sources: [SymbolOccurrence], with options: CommandLineOptions) {
-        do {
-            let configuration = try createConfiguration(options: options,
-                                                        outputFile: output ?? ((options.mode == .graphviz) ? "swan.report.pdf" : "swan.report.md"))
-            let _ = configuration.reporter.report(configuration, occurrences: sources)
+            let sources = try analyzer.analyzeSymbols()
+            let _ = config.reporter.report(config, occurrences: sources, finder: analyzer)
         } catch {
             log(error.localizedDescription, level: .error)
         }

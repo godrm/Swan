@@ -22,6 +22,7 @@ extension Symbol : Hashable {
 /// Collects source code in the path.
 class SourceCollector {
     private(set) var sources: [AbsolutePath] = []
+    private(set) var sourcesInSPM: [AbsolutePath] = []
     private(set) var symbols: [Symbol] = []
     private let configuration: Configuration
     private let targetPath: AbsolutePath
@@ -56,15 +57,18 @@ class SourceCollector {
         symbols = safeSources.value
     }
 
-    func collectSymbolsProject(with indexDB: IndexStoreDB) {
-        sources = computeContents(with: xcodeproj.pbxproj.buildFiles, projectPath: targetPath.pathString)
+    func collectSymbolsWorkspace(with indexDB: IndexStoreDB, includeSPM: Bool = false) {
         if let xcworkspace = xcworkspace {
-            let projectName = "\(xcodeproj.pbxproj.rootObject?.name ?? "").xcodeproj"
-            for project in xcworkspace.data.children where project.location.path != projectName {
+            for project in xcworkspace.data.children {
                 sources.append(contentsOf: computeProjectContents(in: project.location.path))
             }
         }
         sources.append(contentsOf: computeFrameworkContents(in: xcodeproj.pbxproj.fileReferences))
+        if includeSPM {
+            let files = computeContentsWithSPM(with: xcodeproj.pbxproj.buildFiles)
+            sources.append(contentsOf: files)
+            sourcesInSPM.append(contentsOf: files)
+        }
         let safeSources = ThreadSafe<Set<Symbol>>([])
         DispatchQueue.concurrentPerform(iterations: sources.count) { index in
             let symbols = indexDB.symbols(inFilePath: sources[index].pathString)
@@ -73,6 +77,22 @@ class SourceCollector {
         symbols = Array(safeSources.value)
     }
     
+    func collectSymbolsProject(with indexDB: IndexStoreDB, includeSPM: Bool = false) {
+        sources = computeContents(with: xcodeproj.pbxproj.buildFiles, projectPath: targetPath.pathString)
+        sources.append(contentsOf: computeFrameworkContents(in: xcodeproj.pbxproj.fileReferences))
+        if includeSPM {
+            let files = computeContentsWithSPM(with: xcodeproj.pbxproj.buildFiles)
+            sources.append(contentsOf: files)
+            sourcesInSPM.append(contentsOf: files)
+        }
+        let safeSources = ThreadSafe<Set<Symbol>>([])
+        DispatchQueue.concurrentPerform(iterations: sources.count) { index in
+            let symbols = indexDB.symbols(inFilePath: sources[index].pathString)
+            safeSources.atomically { symbolMap in symbols.forEach{ symbolMap.insert($0) } }
+        }
+        symbols = Array(safeSources.value)
+    }
+
     func hasSource(filePath: String) -> Bool {
         for source in sources {
             if source.pathString == filePath {
@@ -81,6 +101,16 @@ class SourceCollector {
         }
         return false
     }
+    
+    func hasSourceInSPM(filePath: String) -> Bool {
+        for source in sourcesInSPM {
+            if source.pathString == filePath {
+                return true
+            }
+        }
+        return false
+    }
+
 
     /// Compute the contents of the files in a target.
     ///
@@ -140,7 +170,7 @@ class SourceCollector {
         var contents: [AbsolutePath] = []
 
         for buildFile in buildFiles {
-            guard let sourcefile = buildFile.file else {
+            guard let _ = buildFile.file else {
                 guard let package = buildFile.product?.package else { continue }
                 let packagePath = "\(swiftPackagePath.pathString)/\(package.name!)"
                 guard FileManager.default.fileExists(atPath: packagePath) else { continue }
@@ -150,13 +180,6 @@ class SourceCollector {
                         contents.append(AbsolutePath("\(packagePath)/\(file)"))
                     }
                 }
-                continue
-            }
-            let parentPath = sourcefile.parentPath() ?? ""
-            let fullPath = AbsolutePath("\(targetPath.pathString)\(parentPath)/\(sourcefile.path ?? sourcefile.name!)")
-            if self.excluded.contains(fullPath) { continue }
-            if fullPath.extension == "swift" && !blocklistFiles.contains(fullPath.basenameWithoutExt) {
-                contents.append(fullPath)
                 continue
             }
         }

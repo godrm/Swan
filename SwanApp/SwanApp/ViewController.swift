@@ -10,6 +10,7 @@ import IndexStoreDB
 
 class ViewController: NSViewController {
     private var projectManager : ProjectManager!
+    private var analyzer : Analyzer!
     static let PREVIEW = "Preview.app"
     static let OPEN = "file:///usr/bin/open"
 
@@ -65,7 +66,7 @@ class ViewController: NSViewController {
     fileprivate func analyze(with options : CommandLineOptions) -> [SymbolOccurrence] {
         do {
             let configuration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
-            let analyzer = try Analyzer(configuration: configuration)
+            self.analyzer = try Analyzer(configuration: configuration)
             let symbols = try analyzer.analyzeSymbols()
             return symbols
         } catch {
@@ -77,18 +78,10 @@ class ViewController: NSViewController {
     private func report(for sources: [SymbolOccurrence], with options: CommandLineOptions) {
         do {
             let configuration = try createConfiguration(options: options)
-            let outputs = configuration.reporter.report(configuration, occurrences: sources)
+            let outputs = configuration.reporter.report(configuration, occurrences: sources, finder: analyzer)
             if options.mode != .console {
                 preview(outputs)
             }
-            
-//            var options = options
-//            options.mode = .graphvizFile
-//            let fileConfiguration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
-//            let fileOutputs = fileConfiguration.reporter.report(fileConfiguration, occurrences: sources)
-//            if options.mode != .console {
-//                preview(fileOutputs)
-//            }
         } catch {
             log(error.localizedDescription, level: .error)
         }

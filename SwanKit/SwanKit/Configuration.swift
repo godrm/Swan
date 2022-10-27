@@ -36,6 +36,8 @@ public struct Configuration {
     /// The project index database path
     public var indexDatabasePath: String
     
+    public let includeSPM: Bool
+        
     internal init(projectPath: AbsolutePath,
                   indexStorePath: String,
                   indexDatabasePath: String? = nil,
@@ -48,7 +50,8 @@ public struct Configuration {
                   outputFile: AbsolutePath,
                   projectFilePath: AbsolutePath,
                   workspaceFilePath: AbsolutePath?,
-                  sourcePackagePath: String) {
+                  sourcePackagePath: String,
+                  includeSPM: Bool) {
         self.projectPath = projectPath
         self.indexStorePath = indexStorePath
         self.indexDatabasePath = indexDatabasePath ?? NSTemporaryDirectory() + "index_\(getpid())"
@@ -62,9 +65,18 @@ public struct Configuration {
         self.projectFilePath = projectFilePath
         self.workspaceFilePath = workspaceFilePath
         self.sourcePackagePath = sourcePackagePath
+        self.includeSPM = includeSPM
     }
     
-    public init(projectPath: AbsolutePath, projectFilePath: AbsolutePath, workspaceFilePath: AbsolutePath? = nil, indexStorePath: String = "", indexDatabasePath: String? = nil, sourcePackagePath: String = "", reportType: ReporterType = .console, outputFile: String = "swan.output.pdf") {
+    public init(projectPath: AbsolutePath,
+                projectFilePath: AbsolutePath,
+                workspaceFilePath: AbsolutePath? = nil,
+                indexStorePath: String = "",
+                indexDatabasePath: String? = nil,
+                sourcePackagePath: String = "",
+                reportType: ReporterType = .console,
+                outputFile: String = "swan.output.pdf",
+                includeSPM: Bool = false) {
         let reporter = ReporterFactory.make(reportType)
 //        let rules = RuleFactory.make()
         let outputFilePath = AbsolutePath(projectPath.asURL.path).appending(component: outputFile)
@@ -80,6 +92,7 @@ public struct Configuration {
                   outputFile: outputFilePath,
                   projectFilePath: projectFilePath,
                   workspaceFilePath: workspaceFilePath,
-                  sourcePackagePath: sourcePackagePath)
+                  sourcePackagePath: sourcePackagePath,
+                  includeSPM: includeSPM)
     }
 }

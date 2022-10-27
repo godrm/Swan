@@ -18,56 +18,25 @@ public final class GraphSymbolReporter: Reporter {
     private var clusterIndex = 1
     private var moduleIndex = 0
 
-    private func filename(from path:String) -> String {
-        let url = URL(fileURLWithPath: path)
-        return url.lastPathComponent
-    }
-    
-    private func makeModule(label: String, moduleKey: String) -> Subgraph {
-        let module = Subgraph(id: "cluster_m\(moduleIndex)", label: label)
-        moduleIndex += 1
-        module.textColor = Color.named(.indianred4)
-        module.borderWidth = 4
-        module.borderColor = Color.named(.indianred4)
-        moduleMap[moduleKey] = module
-        graph.append(module)
-        return module
-    }
-    
-    private func makeFile(label: String, locationPath: String) -> Subgraph {
-        let file = Subgraph(id: "cluster_f\(clusterIndex)", label: label)
-        clusterIndex += 1
-        file.textColor = Color.named(.blue)
-        file.borderWidth = 2
-        file.borderColor = Color.named(.blue)
-        file.fontName = Self.FontName
-        fileMap[locationPath] = file
-        return file
-    }
-
-    private func makeObject(label: String, objectKey: String) -> Subgraph {
-        let object = Subgraph(id: "cluster_o\(clusterIndex)", label: label)
-        clusterIndex += 1
-        object.textColor = Color.named(.darkseagreen4)
-        object.borderWidth = 1
-        object.borderColor = Color.named(.darkseagreen4)
-        object.fontName = Self.FontName
-        objectMap[objectKey] = object
-        return object
-    }
-
-    public func report(_ configuration: Configuration, occurrences: [SymbolOccurrence]) -> [String] {
+    public func report(_ configuration: Configuration, occurrences: [SymbolOccurrence], finder: SymbolFindable? = nil) -> [String] {
         var nodeToObjectMap = Dictionary<Node, Subgraph>()
         var nodeUSRMap = Dictionary<String, Node>()
         var usrToFileMap = Dictionary<String, String>()
         var implicitMap = Dictionary<String, Symbol>()
         var extensionMap = Dictionary<String, Subgraph>()
+        var fileToModuleMap = Dictionary<Subgraph, Subgraph>()
+        var objectToFileMap = Dictionary<Subgraph, Subgraph>()
+        var fileInSMP = Set<String>()
         var edges = Set<Edge>()
+        moduleMap.removeAll()
+        fileMap.removeAll()
+        objectMap.removeAll()
+        clusterIndex = 1
+        moduleIndex = 0
 
-        //FIXME: SystemModule is remarked. (Now Not Use)
+        //FIXME: SystemModule is remarked. (Not Use)
         //let systemModule = makeModule(label: "System", moduleKey: "System")
-        for selected in occurrences where selected.roles.contains(.definition) && selected.roles.contains(.canonical) && selected.relations.count == 0 {
-            
+        for selected in occurrences where selected.isDefinition() {            
             var module : Subgraph? = moduleMap[selected.location.moduleName]
             if module == nil {
                 module = makeModule(label: selected.location.moduleName + " Module", moduleKey: selected.location.moduleName)
@@ -77,7 +46,11 @@ public final class GraphSymbolReporter: Reporter {
             var file : Subgraph? = fileMap[selected.location.path]
             if file == nil {
                 file = makeFile(label: name, locationPath: selected.location.path)
+                if let finder = finder, finder.isInSPM(for: selected.location.path) {
+                    fileInSMP.insert(selected.location.path)
+                }
                 module?.append(file!)
+                fileToModuleMap[file!] = module
             }
             
             if selected.symbol.isKindOfObject() {
@@ -85,11 +58,12 @@ public final class GraphSymbolReporter: Reporter {
                 if object == nil {
                     object = makeObject(label: "\(selected.symbol.kind) \(selected.symbol.name)", objectKey: selected.symbol.usr)
                     file?.append(object!)
+                    objectToFileMap[object!] = file!
                 }
             }
         }
         
-        for selected in occurrences {
+        for selected in occurrences where !selected.isDefinition() {
             let file : Subgraph? = fileMap[selected.location.path]
             
             if selected.roles.contains(.definition) || selected.relations.count == 0  {
@@ -129,6 +103,7 @@ public final class GraphSymbolReporter: Reporter {
                         if object == nil {
                             object = makeObject(label: "\(selected.symbol.kind) \(selected.symbol.name)", objectKey: selected.symbol.usr)
                             file?.append(object!)
+                            objectToFileMap[object!] = file!
                         }
                         else if let relation = selected.relations.first,
                             relation.roles.contains(.childOf),
@@ -165,6 +140,7 @@ public final class GraphSymbolReporter: Reporter {
                             if object == nil {
                                 object = makeObject(label: "\(relation.symbol.kind) \(relation.symbol.name)", objectKey: relation.symbol.usr)
                                 file?.append(object!)
+                                objectToFileMap[object!] = file!
                             }
                             if nodeToObjectMap[node!] == nil {
                                 object?.append(node!)
@@ -184,7 +160,7 @@ public final class GraphSymbolReporter: Reporter {
             }
         }
             
-        for selected in occurrences {
+        for selected in occurrences where !selected.isDefinition() {
             let file : Subgraph? = fileMap[selected.location.path]
             if selected.symbol.kind == .parameter ||
                 selected.symbol.kind == .enumConstant ||
@@ -235,6 +211,7 @@ public final class GraphSymbolReporter: Reporter {
 
             for relation in selected.relations {
                 let founded = nodeUSRMap[selectedUSR] != nil
+
                 if relation.roles.contains(.childOf) &&
                     ( relation.symbol.isKindOfObject()) {
                     if founded {
@@ -242,11 +219,13 @@ public final class GraphSymbolReporter: Reporter {
                         if object == nil {
                             object = makeObject(label: "\(relation.symbol.kind) \(relation.symbol.name)", objectKey: relation.symbol.usr)
                             file?.append(object!)
+                            objectToFileMap[object!] = file!
                         }
                         if nodeToObjectMap[node!] == nil {
                             object?.append(node!)
                             nodeToObjectMap[node!] = object
                         }
+                        usrToFileMap[selectedUSR] = selected.location.path
                     }
                     else {
                         file?.append(node!)
@@ -287,6 +266,7 @@ public final class GraphSymbolReporter: Reporter {
                         object.append(node!)
                         nodeToObjectMap[node!] = object
                         nodeUSRMap[relation.symbol.usr] = node!
+                        usrToFileMap[selectedUSR] = selected.location.path
                     }
                     else {
                         continue
@@ -317,6 +297,7 @@ public final class GraphSymbolReporter: Reporter {
                     if let object = objectMap[selectedUSR], nodeToObjectMap[node!] == nil {
                         object.append(node!)
                         nodeToObjectMap[node!] = object
+                        usrToFileMap[selectedUSR] = selected.location.path
                         continue
                     }
                     
@@ -358,8 +339,79 @@ public final class GraphSymbolReporter: Reporter {
             }
         }
         
+        var nodes = [Node]()
+        var files = [(module: Subgraph, file: Subgraph)]()
+        var mustFiles = [String]()
+        for file in fileMap.keys {
+            if fileInSMP.contains(file),
+               let fileGraph = fileMap[file],
+               let moduleGraph = fileToModuleMap[fileGraph] {
+                    nodes.append(contentsOf: allNodes(from: fileGraph))
+                files.append((moduleGraph, fileGraph))
+            }
+        }
+        for node in nodes {
+            edges.filter{ $0.from == node }.forEach{ graph.remove($0); edges.remove($0) }
+        }
+        for pair in files {
+            pair.module.remove(pair.file)
+            graph.remove(pair.module)
+        }
+
         // Render image using dot layout algorithm
         _ = try? graph.render(using: .dot, to: Format.pdf, output: configuration.outputFile.pathString, removeFlag: false)
         return [configuration.outputFile.pathString]
+    }
+    
+    private func allNodes(from fileGraph: Subgraph) -> [Node] {
+        var result = [Node]()
+        func nodes(in subgraph: Subgraph) -> [Node] {
+            var result = [Node]()
+            result.append(contentsOf: subgraph.nodes)
+            for subgraph in subgraph.subgraphs {
+                result.append(contentsOf: nodes(in: subgraph))
+            }
+            return result
+        }
+        result.append(contentsOf: nodes(in: fileGraph))
+        return result
+    }
+    
+    private func filename(from path:String) -> String {
+        let url = URL(fileURLWithPath: path)
+        return url.lastPathComponent
+    }
+    
+    private func makeModule(label: String, moduleKey: String) -> Subgraph {
+        let module = Subgraph(id: "cluster_m\(moduleIndex)", label: label)
+        moduleIndex += 1
+        module.textColor = Color.named(.indianred4)
+        module.borderWidth = 4
+        module.borderColor = Color.named(.indianred4)
+        moduleMap[moduleKey] = module
+        graph.append(module)
+        return module
+    }
+    
+    private func makeFile(label: String, locationPath: String) -> Subgraph {
+        let file = Subgraph(id: "cluster_f\(clusterIndex)", label: label)
+        clusterIndex += 1
+        file.textColor = Color.named(.blue)
+        file.borderWidth = 2
+        file.borderColor = Color.named(.blue)
+        file.fontName = Self.FontName
+        fileMap[locationPath] = file
+        return file
+    }
+
+    private func makeObject(label: String, objectKey: String) -> Subgraph {
+        let object = Subgraph(id: "cluster_o\(clusterIndex)", label: label)
+        clusterIndex += 1
+        object.textColor = Color.named(.darkseagreen4)
+        object.borderWidth = 1
+        object.borderColor = Color.named(.darkseagreen4)
+        object.fontName = Self.FontName
+        objectMap[objectKey] = object
+        return object
     }
 }

@@ -3,5 +3,5 @@ import IndexStoreDB
 
 public protocol Reporter {
     
-    func report(_ configuration: Configuration, occurrences: [SymbolOccurrence]) -> [String]
+    func report(_ configuration: Configuration, occurrences: [SymbolOccurrence], finder: SymbolFindable?) -> [String]
 }
