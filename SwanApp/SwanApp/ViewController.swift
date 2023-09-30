@@ -15,7 +15,7 @@ class ViewController: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         let handler : (URL?, String, String, String?) -> Void = { (targetURL, project, project_filepath, workspace_filepath) in
             guard let target = targetURL, project.count > 0 else { return }
             var options = CommandLineOptions()
@@ -64,7 +64,7 @@ class ViewController: NSViewController {
     
     fileprivate func analyze(with options : CommandLineOptions) -> [SymbolOccurrence] {
         do {
-            let configuration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
+            let configuration = try createConfiguration(options: options)
             let analyzer = try Analyzer(configuration: configuration)
             let symbols = try analyzer.analyzeSymbols()
             return symbols
@@ -76,19 +76,11 @@ class ViewController: NSViewController {
     
     private func report(for sources: [SymbolOccurrence], with options: CommandLineOptions) {
         do {
-            let configuration = try createConfiguration(options: options)
+            let configuration = try createConfiguration(options: options, outputFile: "swan.output.pdf")
             let outputs = configuration.reporter.report(configuration, occurrences: sources)
             if options.mode != .console {
                 preview(outputs)
             }
-            
-//            var options = options
-//            options.mode = .graphvizFile
-//            let fileConfiguration = try createConfiguration(options: options, outputFile: "swan.func.pdf")
-//            let fileOutputs = fileConfiguration.reporter.report(fileConfiguration, occurrences: sources)
-//            if options.mode != .console {
-//                preview(fileOutputs)
-//            }
         } catch {
             log(error.localizedDescription, level: .error)
         }

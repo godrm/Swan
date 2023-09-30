@@ -34,10 +34,13 @@ public struct CommandLineOptions {
 }
 
 public func createConfiguration(options: CommandLineOptions, outputFile: String = "swan.output.pdf") throws -> Configuration {
-    let indexStorePath: AbsolutePath
+    var indexStorePath: AbsolutePath
     let sourcePackagePath: AbsolutePath
     let buildRootPath = AbsolutePath(options.buildPath)
     indexStorePath = buildRootPath.appending(components: ["Index", "DataStore"])
+    if !FileManager.default.fileExists(atPath: indexStorePath.pathString) {
+        indexStorePath = buildRootPath.appending(components: ["Index.noindex", "DataStore"])
+    }
     sourcePackagePath = buildRootPath.appending(components: ["SourcePackages","checkouts"])
     
     guard let cwd = localFileSystem.currentWorkingDirectory else {

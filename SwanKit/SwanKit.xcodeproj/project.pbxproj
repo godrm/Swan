@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -644,7 +644,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/indexstore-db.git";
 			requirement = {
-				branch = release/5.6;
+				branch = release/5.9;
 				kind = branch;
 			};
 		};
@@ -652,7 +652,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-tools-support-core.git";
 			requirement = {
-				branch = release/5.6;
+				branch = release/5.9;
 				kind = branch;
 			};
 		};
