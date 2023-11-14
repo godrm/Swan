@@ -11,6 +11,11 @@ import DOT
 
 public final class GraphSymbolReporter: Reporter {
     static let FontName = "SF Mono"
+
+    static public func isAvailableRender() -> Bool {
+        return Graph(directed: true).isAvailable(using: .dot)
+    }
+
     private var graph = Graph(directed: true)
     private var moduleMap = Dictionary<String, Subgraph>()
     private var fileMap = Dictionary<String, Subgraph>()
@@ -55,7 +60,7 @@ public final class GraphSymbolReporter: Reporter {
         objectMap[objectKey] = object
         return object
     }
-
+    
     public func report(_ configuration: Configuration, occurrences: [SymbolOccurrence]) -> [String] {
         var nodeToObjectMap = Dictionary<Node, Subgraph>()
         var nodeUSRMap = Dictionary<String, Node>()

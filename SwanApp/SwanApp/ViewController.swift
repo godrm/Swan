@@ -12,7 +12,8 @@ class ViewController: NSViewController {
     private var projectManager : ProjectManager!
     static let PREVIEW = "Preview.app"
     static let OPEN = "file:///usr/bin/open"
-
+    @IBOutlet weak var statusText: NSTextField!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
                 
@@ -59,6 +60,17 @@ class ViewController: NSViewController {
                     }
                 }
             }
+        }
+        
+        verifyEnvironment()
+    }
+    
+    private func verifyEnvironment() {
+        if GraphSymbolReporter.isAvailableRender() {
+            self.statusText.stringValue = "dot 설치를 확인했습니다"
+        }
+        else {
+            self.statusText.stringValue = "brew로 dot 바이너리를 설치해주세요"
         }
     }
     

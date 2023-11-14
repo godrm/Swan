@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22155"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -687,7 +687,7 @@
                 <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
                     <window key="window" title="Swan" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-                        <rect key="contentRect" x="196" y="240" width="480" height="346"/>
+                        <rect key="contentRect" x="196" y="240" width="480" height="400"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                         <connections>
                             <outlet property="delegate" destination="B8D-0N-5wS" id="98r-iN-zZc"/>
@@ -705,21 +705,40 @@
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="SwanApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="346"/>
+                    <view key="view" misplaced="YES" id="m2S-Jp-Qdl">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="349"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oPK-mv-NS5" customClass="ProjectDragView" customModule="SwanApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="480" height="346"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f1A-hS-YIJ">
+                                <rect key="frame" x="-2" y="4" width="484" height="16"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Label" id="lr7-AZ-Cpc">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oPK-mv-NS5" customClass="ProjectDragView" customModule="SwanApp" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="20" width="480" height="383"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="background" id="VOU-21-nnl"/>
                             </imageView>
                         </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="oPK-mv-NS5" secondAttribute="trailing" id="67w-NO-Ype"/>
+                            <constraint firstItem="f1A-hS-YIJ" firstAttribute="top" secondItem="oPK-mv-NS5" secondAttribute="bottom" id="6Eb-1z-tgD"/>
+                            <constraint firstItem="f1A-hS-YIJ" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="ELB-zO-Tin"/>
+                            <constraint firstItem="oPK-mv-NS5" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="IrC-ba-EWl"/>
+                            <constraint firstAttribute="trailing" secondItem="f1A-hS-YIJ" secondAttribute="trailing" id="Np5-8J-6XP"/>
+                            <constraint firstAttribute="bottom" secondItem="f1A-hS-YIJ" secondAttribute="bottom" constant="4" id="jY6-Qh-QWx"/>
+                            <constraint firstItem="oPK-mv-NS5" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="sTH-eN-Dqe"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="statusText" destination="f1A-hS-YIJ" id="XId-Hc-CxR"/>
+                    </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="825"/>
+            <point key="canvasLocation" x="75" y="828.5"/>
         </scene>
     </scenes>
     <resources>
