@@ -16,7 +16,7 @@ class ViewController: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         let handler : (URL?, String, String, String?) -> Void = { (targetURL, project, project_filepath, workspace_filepath) in
             guard let target = targetURL, project.count > 0 else { return }
             var options = CommandLineOptions()

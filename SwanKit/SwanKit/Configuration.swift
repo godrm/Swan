@@ -79,7 +79,13 @@ public struct Configuration {
                 includeSPM: Bool = false) {
         let reporter = ReporterFactory.make(reportType)
 //        let rules = RuleFactory.make()
-        let outputFilePath = AbsolutePath(projectPath.asURL.path).appending(component: outputFile)
+        let outputFilePath : AbsolutePath =
+            if outputFile == "swan.output.pdf" {
+                AbsolutePath(projectPath.asURL.path).appending(component: outputFile)
+            }
+            else {
+                AbsolutePath(outputFile)
+            }
         self.init(projectPath: projectPath,
                   indexStorePath: indexStorePath,
                   indexDatabasePath: indexDatabasePath,

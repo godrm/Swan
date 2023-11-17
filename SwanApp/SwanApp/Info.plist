@@ -26,5 +26,7 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSSystemAdministrationUsageDescription</key>
+	<string>디스크 전체에 접근합니다</string>
 </dict>
 </plist>

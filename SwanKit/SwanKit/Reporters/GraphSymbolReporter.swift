@@ -61,6 +61,13 @@ public final class GraphSymbolReporter: Reporter {
                     objectToFileMap[object!] = file!
                 }
             }
+            else if name == "main.swift" {
+                var object : Subgraph? = objectMap[selected.symbol.usr]
+                if object == nil {
+                    object = makeObject(label: "Top-Level", objectKey: "main-swift-top-level")
+                    file?.append(object!)
+                }
+            }
         }
         
         for selected in occurrences where !selected.isDefinition() {
@@ -153,8 +160,13 @@ public final class GraphSymbolReporter: Reporter {
                     }
                     if !objectMapped {
                         nodeUSRMap[selected.symbol.usr] = node!
-                        file?.append(node!)
                         usrToFileMap[selected.symbol.usr] = selected.location.path
+                        if selected.location.path.hasSuffix("/main.swift"), let topLevel = objectMap["main-swift-top-level"] {
+                            topLevel.append(node!)
+                        }
+                        else {
+                            file?.append(node!)
+                        }
                     }
                 }
             }
@@ -162,6 +174,7 @@ public final class GraphSymbolReporter: Reporter {
             
         for selected in occurrences where !selected.isDefinition() {
             let file : Subgraph? = fileMap[selected.location.path]
+            let isMainFile = selected.location.path.hasSuffix("/main.swift")
             if selected.symbol.kind == .parameter ||
                 selected.symbol.kind == .enumConstant ||
                 selected.relations.count == 1 && selected.relations.first?.symbol.kind == .parameter ||
@@ -268,6 +281,10 @@ public final class GraphSymbolReporter: Reporter {
                         nodeUSRMap[relation.symbol.usr] = node!
                         usrToFileMap[selectedUSR] = selected.location.path
                     }
+//                    else if isMainFile, let topLevel = objectMap["main-swift-top-level"] {
+//                        nodeToObjectMap[node!] = object
+//                        nodeUSRMap[relation.symbol.usr] = node!
+//                    }
                     else {
                         continue
                     }
