@@ -8,6 +8,7 @@ import Foundation
 import IndexStoreDB
 import TSCBasic
 import TSCUtility
+import GraphViz
 
 public struct CommandLineOptions {
     /// The project path
@@ -38,7 +39,7 @@ public struct CommandLineOptions {
 public func createConfiguration(options: CommandLineOptions, outputFile: String = "swan.output.pdf") throws -> Configuration {
     let indexStoreV5Path: AbsolutePath
     let sourcePackagePath: AbsolutePath
-    let buildRootPath = AbsolutePath(options.buildPath)
+    let buildRootPath = try! AbsolutePath(validating: options.buildPath)
     sourcePackagePath = buildRootPath.appending(components: ["SourcePackages","checkouts"])
 
     indexStoreV5Path = buildRootPath.appending(components: ["Index", "DataStore", "v5"])
@@ -54,7 +55,7 @@ public func createConfiguration(options: CommandLineOptions, outputFile: String 
     guard let cwd = localFileSystem.currentWorkingDirectory else {
         throw PEError.fiendCurrentWorkingDirectoryFailed
     }
-    let rootPath = AbsolutePath(options.path, relativeTo: cwd)
+    let rootPath = try! AbsolutePath(validating: options.path, relativeTo: cwd)
     let configuration = Configuration(projectPath: rootPath,
                                       projectFilePath: AbsolutePath(options.projectFilePath),
                                       workspaceFilePath: (options.workspaceFilePath.count>0) ? AbsolutePath(options.workspaceFilePath) : nil,
@@ -66,9 +67,15 @@ public func createConfiguration(options: CommandLineOptions, outputFile: String 
     return configuration
 }
 
+public func isSupportGraphvizBinary() -> Bool {
+    let graph = Graph()
+    return graph.isAvailable(using: .dot)
+}
+
 enum PEError: Error {
     case findIndexFailed(message: String)
     case fiendCurrentWorkingDirectoryFailed
     case findProjectFileFailed(message: String)
     case indexStorePathPathWrong
+    case dotBinaryNotFound
 }

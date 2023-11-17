@@ -9,6 +9,7 @@ import SwanKit
 import IndexStoreDB
 
 class ViewController: NSViewController {
+    @IBOutlet weak var statusLabel: NSTextField!
     private var projectManager : ProjectManager!
     private var analyzer : Analyzer!
     static let PREVIEW = "Preview.app"
@@ -61,6 +62,16 @@ class ViewController: NSViewController {
                 }
             }
         }
+        verifyEnvironment()
+    }
+    
+    private func verifyEnvironment() {
+        if isSupportGraphvizBinary() {
+            self.statusLabel.stringValue = "dot command is found successfully."
+        }
+        else {
+            self.statusLabel.stringValue = "Need to install graphviz using brew."
+        }
     }
     
     fileprivate func analyze(with options : CommandLineOptions) -> [SymbolOccurrence] {
@@ -71,6 +82,7 @@ class ViewController: NSViewController {
             return symbols
         } catch {
             log(error.localizedDescription, level: .error)
+            self.statusLabel.stringValue = error.localizedDescription
         }
         return []
     }
@@ -84,12 +96,17 @@ class ViewController: NSViewController {
             }
         } catch {
             log(error.localizedDescription, level: .error)
+            self.statusLabel.stringValue = error.localizedDescription
         }
     }
 
     private func preview(_ outputs: [String]) {
         guard outputs.count > 0,
-              let output = outputs.first else { return }
+              let output = outputs.first 
+        else {
+            self.statusLabel.stringValue = "Preview not working because of empty output"
+            return
+        }
         let aTask = Process()
         aTask.executableURL = URL(string: Self.OPEN)
         aTask.arguments = ["-a", Self.PREVIEW, output]
