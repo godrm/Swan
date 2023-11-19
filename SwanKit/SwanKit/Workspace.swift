@@ -8,9 +8,17 @@
 import Foundation
 import IndexStoreDB
 
-class Workspace {
+public class Workspace {
     
     static let libIndexStore = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libIndexStore.dylib"
+    
+    static let xcodeVersion =
+        "/Applications/Xcode.app/Contents/version.plist"
+    
+    public static func isAvailable() -> Bool {
+        return FileManager.default.fileExists(atPath: xcodeVersion)
+            && FileManager.default.fileExists(atPath: libIndexStore)
+    }
         
     /// Build setup
     let buildSettings: DatabaseBuildSystem

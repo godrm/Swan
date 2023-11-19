@@ -19,28 +19,41 @@ class ViewController: NSViewController {
         super.viewDidLoad()
                 
         let handler : (URL?, String, String, String?) -> Void = { (targetURL, project, project_filepath, workspace_filepath) in
-            guard let target = targetURL, project.count > 0 else { return }
+            guard let target = targetURL, project.count > 0 else {
+                log("project not found in target = \(targetURL?.absoluteString)", level: .error)
+                return
+            }
+            self.updateStatus(ment: "Prepare options for analysis")
             var options = CommandLineOptions()
             options.buildPath = target.path
             options.path = project
             options.projectFilePath = project_filepath
             options.workspaceFilePath = workspace_filepath ?? ""
             options.mode = .graphviz
+            self.updateStatus(ment: "Do analyzing in project files")
             let sources = self.analyze(with: options)
+            self.updateStatus(ment: "Make a report for analysis result")
             self.report(for: sources, with: options)
+            self.updateStatus(ment: "The Swan report is done.")
         }
         
         NotificationCenter.default.addObserver(forName: ProjectDragView.NotificationName.didDropURL, object: nil, queue: nil) { (notification) in
-            guard let url = notification.userInfo?["url"] as? URL else { return }
+            guard let url = notification.userInfo?["url"] as? URL else {
+                log("drop url not exist.", level: .error)
+                return
+            }
             self.projectManager = ProjectManager()
 
             if self.projectManager.isProject(for: url) {
+                self.updateStatus(ment: "Looking up setting for project")
                 self.projectManager.grepProjectSetting(for: url, completeHandler: handler)
             }
             else if self.projectManager.isWorkspace(for: url) {
                 self.projectManager.grepWorkspaceScheme(for: url) { (schemes) in
+                    self.updateStatus(ment: "Selecting scheme for workspace")
                     DispatchQueue.main.async {
                         if schemes.count == 0 {                            
+                            self.updateStatus(ment: "workspace's scheme not founded.")
                             return
                         }
                         let selectButton = NSPopUpButton(title: "shemes", target: self, action: #selector(ViewController.selectScheme))
@@ -65,13 +78,26 @@ class ViewController: NSViewController {
         verifyEnvironment()
     }
     
+    private func updateStatus(ment: String) {
+        DispatchQueue.main.async {
+            self.statusLabel.stringValue = ment
+        }
+        log("update status - \(ment)", level: .debug)
+    }
+    
     private func verifyEnvironment() {
-        if isSupportGraphvizBinary() {
-            self.statusLabel.stringValue = "dot command is found successfully."
+        if Workspace.isAvailable() {
+            updateStatus(ment: "Xcode bundle was founded.")
         }
         else {
-            self.statusLabel.stringValue = "Need to install graphviz using brew."
+            updateStatus(ment: "Xcode or IndexStore Library Not founded.")
         }
+        if isSupportGraphvizBinary() {
+            updateStatus(ment: "dot command installed and confirmed.")
+        }
+        else {
+            updateStatus(ment: "graphviz must be installed by brew for dot command.")
+        }        
     }
     
     fileprivate func analyze(with options : CommandLineOptions) -> [SymbolOccurrence] {
@@ -81,8 +107,7 @@ class ViewController: NSViewController {
             let symbols = try analyzer.analyzeSymbols()
             return symbols
         } catch {
-            log(error.localizedDescription, level: .error)
-            self.statusLabel.stringValue = error.localizedDescription
+            updateStatus(ment: error.localizedDescription)
         }
         return []
     }
@@ -95,8 +120,7 @@ class ViewController: NSViewController {
                 preview(outputs)
             }
         } catch {
-            log(error.localizedDescription, level: .error)
-            self.statusLabel.stringValue = error.localizedDescription
+            updateStatus(ment: error.localizedDescription)
         }
     }
 
@@ -104,7 +128,7 @@ class ViewController: NSViewController {
         guard outputs.count > 0,
               let output = outputs.first 
         else {
-            self.statusLabel.stringValue = "Preview not working because of empty output"
+            updateStatus(ment: "Preview not working because of empty output")
             return
         }
         let aTask = Process()

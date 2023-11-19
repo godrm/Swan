@@ -9,6 +9,7 @@ import IndexStoreDB
 import TSCBasic
 import TSCUtility
 import GraphViz
+import DOT
 
 public struct CommandLineOptions {
     /// The project path
