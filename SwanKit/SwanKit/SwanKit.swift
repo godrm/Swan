@@ -10,6 +10,9 @@ import TSCBasic
 import TSCUtility
 import GraphViz
 import DOT
+import os
+
+let swanLogger = os.Logger(subsystem: "kr.codesquad.swan", category: "swankit")
 
 public struct CommandLineOptions {
     /// The project path
@@ -71,6 +74,21 @@ public func createConfiguration(options: CommandLineOptions, outputFile: String 
 public func isSupportGraphvizBinary() -> Bool {
     let graph = Graph()
     return graph.isAvailable(using: .dot)
+}
+
+public func log(_ message: String, level : os.OSLogType = .default) {
+    switch level {
+    case .default:
+        swanLogger.info("\(message)")
+    case .info:
+        swanLogger.info("\(message)")
+    case .error:
+        swanLogger.error("\(message)")
+    case .fault:
+        swanLogger.critical("\(message)")
+    default:
+        swanLogger.warning("\(message)")
+    }
 }
 
 enum PEError: Error {

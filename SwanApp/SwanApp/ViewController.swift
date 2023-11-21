@@ -69,7 +69,10 @@ class ViewController: NSViewController {
                         let selected = alert.runModal()
                         
                         guard selected == .alertFirstButtonReturn,
-                              let scheme = selectButton.selectedItem?.title else { return }
+                              let scheme = selectButton.selectedItem?.title else {
+                            log("workspace's scheme not selected", level: .error)
+                            return
+                        }
                         ProjectManager().grepWorkspaceSchemeSetting(for: url, scheme: scheme, completeHandler: handler)
                     }
                 }
@@ -91,13 +94,14 @@ class ViewController: NSViewController {
         }
         else {
             updateStatus(ment: "Xcode or IndexStore Library Not founded.")
+            return
         }
         if isSupportGraphvizBinary() {
             updateStatus(ment: "dot command installed and confirmed.")
         }
         else {
             updateStatus(ment: "graphviz must be installed by brew for dot command.")
-        }        
+        }
     }
     
     fileprivate func analyze(with options : CommandLineOptions) -> [SymbolOccurrence] {

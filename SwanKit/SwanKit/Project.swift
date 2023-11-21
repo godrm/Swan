@@ -53,7 +53,10 @@ public final class ProjectManager {
     public func grepProjectSetting(for url:URL, completeHandler: @escaping (URL?, String, String, String?) -> Void ) {
         runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.SHOW_SETTING, Self.Argument.PROJECT, url.path]) {
             let builds = String.init(data: self.readData, encoding: .utf8)
-            guard let settings = builds?.split(separator: "\n") else { return }
+            guard let settings = builds?.split(separator: "\n") else {
+                log("project's build setting not found")
+                return
+            }
             var target_build_dir = ""
             var project_dir = ""
             var project_file_path = ""
@@ -82,7 +85,10 @@ public final class ProjectManager {
     public func grepWorkspaceScheme(for url:URL, completeHandler: @escaping ([String]) -> Void ) {
         runProcess(fileurl: Self.Constant.XCODEBUILD, arguments: [Self.Argument.LIST, Self.Argument.WORKSPACE, url.path]) {
             let builds = String.init(data: self.readData, encoding: .utf8)
-            guard let settings = builds?.split(separator: "\n") else { return }
+            guard let settings = builds?.split(separator: "\n") else {
+                log("workspace's build setting not found")
+                return
+            }
             var hasSchemes = false
             var schemes = [String]()
             for setting in settings {

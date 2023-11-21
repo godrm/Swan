@@ -139,7 +139,7 @@ class SourceCollector {
                 let dirContents = try fs.getDirectoryContents(curr).map{ curr.appending(component: $0) }
                 queue += dirContents
             } catch {
-                log(error.localizedDescription, level: .warning)
+                log(error.localizedDescription, level: .error)
             }
         }
 
@@ -206,7 +206,10 @@ class SourceCollector {
         var contents: [AbsolutePath] = []
 
         let projectPath = "\(targetPath.pathString)/\(xcodeproject)"
-        guard let framework = try? XcodeProj(pathString: projectPath) else { return[] }
+        guard let framework = try? XcodeProj(pathString: projectPath) else {
+            log("XcodeProj can't open at \(projectPath))", level: .debug)
+            return[]
+        }
         let projectURL = URL(fileURLWithPath: projectPath)
         contents.append(contentsOf: computeContents(with: framework.pbxproj.buildFiles, projectPath: projectURL.deletingLastPathComponent().path))
         
