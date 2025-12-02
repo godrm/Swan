@@ -65,6 +65,7 @@ class SourceCollector {
             }
         }
         sources.append(contentsOf: computeFrameworkContents(in: xcodeproj.pbxproj.fileReferences))
+        sources.append(contentsOf: computeFileSystem(with: xcodeproj.pbxproj.fileSystemSynchronizedRootGroups))
         let safeSources = ThreadSafe<Set<Symbol>>([])
         DispatchQueue.concurrentPerform(iterations: sources.count) { index in
             let symbols = indexDB.symbols(inFilePath: sources[index].pathString)
@@ -159,6 +160,30 @@ class SourceCollector {
                 contents.append(fullPath)
                 continue
             }
+        }
+        
+        return contents
+    }
+
+    private func computeFileSystem(with groups:  [PBXFileSystemSynchronizedRootGroup]) -> [AbsolutePath] {
+        var contents: [AbsolutePath] = []
+
+        for group in groups {
+            let packagePath = "\(targetPath.pathString)/\(group.path!)"
+            guard FileManager.default.fileExists(atPath: packagePath) else { continue }
+            let directories = FileManager.default.enumerator(atPath: packagePath)
+            while let file = directories?.nextObject() as? String {
+                if file.hasSuffix(".swift") {
+                    contents.append(AbsolutePath("\(packagePath)/\(file)"))
+                }
+            }
+//            let parentPath = sourcefile.parentPath() ?? ""
+//            let fullPath = AbsolutePath("\(targetPath.pathString)\(parentPath)/\(sourcefile.path ?? sourcefile.name!)")
+//            if self.excluded.contains(fullPath) { continue }
+//            if fullPath.extension == "swift" && !blocklistFiles.contains(fullPath.basenameWithoutExt) {
+//                contents.append(fullPath)
+//                continue
+//            }
         }
         
         return contents
